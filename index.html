@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Portfólio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <!-- Coloque aqui seu nome e links do menu -->
+         <h1>Lucasitron</h1>
+         <h2>O céu continuará sendo um limite até que o ultrapassemos!</h2>
+         <p id = "saudacao"></p>
+         
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#Sobre">Sobre</a></li>
+            <li><a href="#Projetos">Projetos</a></li>
+            <li><a href="#Contato">Contato</a></li>
+        </ul>
+    </nav>
+    <main>
+        <!-- Adicione aqui as seções: Sobre, Projetos, Contato -->
+         <!--Sobre-->
+         <section id = "Sobre">
+            <h2>Quem sou eu?!</h2>
+            <p>Eu sou apenas um rapaz, latino-americano sem dinheiro no banco. Um jovem senhor 
+            graduando em Engenharia da computação, na Universidade Federal do Estado do Pará.
+            que poderia estar matando, roubando, se dragando se fumando, mas que decidiu fazer programa
+            para sobreviver.</p>
+         </section>
+
+        <!--Projetos-->
+         <section id = "Projetos">
+            <h2>
+                Coisas que eu sei
+            </h2>
+            <p>Bora ver</p>
+         </section>
+
+         <!--Contato-->
+         <section id = "Contato">
+            <h2>Contato</h2>
+
+            <!--Form para contato-->
+            <form>
+                <!--Campo para nome-->
+                <label for = "Seu nome"> Seu nome</label>
+                <input type="text" id = "nome" placeholder="Diga seu nome">
+
+                <!--Campo para E-mail-->
+                <label for="email">Seu Email</label>
+                <input type="email" id="email" placeholder="Digite seu email">
+
+                <!--Campo para Whatsapp-->
+                <label for="Whatsapp">Seu Whatsapp</label>
+                <input type="number" id="Whatsapp" placeholder="99 9 9999-9999">
+
+                <label for="mensagem">Sua Mensagem</label>
+                <textarea id="mensagem" placeholder="Escreva sua mensagem"></textarea>
+                <!-- Área de texto para uma mensagem maior -->
+
+                <button type="submit">Enviar</button>
+                <!-- Botão para enviar o formulário -->
+            </form>
+         </section>
+
+    </main>
+    <footer>
+        <!-- Rodapé -->
+        <p>&copy; 2024 [Seu Nome]. Todos os direitos reservados.</p>
+        <!-- Texto de direitos autorais -->
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+/* Reset básico para remover os estilos padrões dos navegadores */
+* {
+    margin: 0; /* Remove margens padrões */
+    padding: 0; /* Remove preenchimentos padrões */
+    box-sizing: border-box; /* Faz com que largura/altura incluam bordas e preenchimentos */
+}
+
+/* Estilo geral da página */
+body {
+    font-family: Arial, sans-serif; /* Fonte legível e limpa */
+    line-height: 1.6; /* Altura das linhas para melhorar a leitura */
+    color: #333; /* Cor do texto: cinza escuro */
+    background-color: #f4f4f4; /* Cor de fundo: cinza claro */
+}
+
+/* Cabeçalho */
+header {
+    background: #333; /* Fundo preto */
+    color: white; /* Texto branco */
+    text-align: center; /* Centraliza o texto */
+    padding: 2rem 1rem; /* Espaçamento interno */
+}
+
+header h1 {
+    font-size: 2.5rem; /* Tamanho grande para o título principal */
+}
+
+header p {
+    font-size: 1.2rem; /* Tamanho médio para o subtítulo */
+}
+
+/* Navegação */
+nav {
+    background: #444; /* Fundo cinza escuro */
+    padding: 1rem; /* Espaçamento interno */
+}
+
+nav ul {
+    list-style: none; /* Remove os marcadores das listas */
+    display: flex; /* Organiza os itens em linha */
+    justify-content: center; /* Centraliza os itens */
+    gap: 1rem; /* Espaçamento entre os itens */
+}
+
+nav ul li a {
+    color: white; /* Texto branco */
+    text-decoration: none; /* Remove o sublinhado */
+    background: #555; /* Fundo cinza médio */
+    padding: 0.5rem 1rem; /* Espaçamento interno */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
+nav ul li a:hover {
+    background: #777; /* Altera o fundo ao passar o mouse */
+}
+
+/* Conteúdo principal */
+main {
+    padding: 2rem; /* Espaçamento ao redor */
+}
+
+section {
+    margin-bottom: 2rem; /* Espaçamento entre as seções */
+}
+
+/* Projetos */
+.projetos {
+    display: flex; /* Organiza os projetos em linha */
+    flex-wrap: wrap; /* Permite que quebrem linha se necessário */
+    gap: 1rem; /* Espaçamento entre os projetos */
+}
+
+.projetos article {
+    background: white; /* Fundo branco */
+    border: 1px solid #ddd; /* Borda fina e cinza */
+    border-radius: 5px; /* Bordas arredondadas */
+    padding: 1rem; /* Espaçamento interno */
+    flex: 1 1 calc(50% - 1rem); /* Tamanho flexível, ocupa metade da linha */
+}
+
+/* Formulário */
+form {
+    display: flex; /* Organiza os campos em coluna */
+    flex-direction: column; /* Coloca os itens na vertical */
+    gap: 1rem; /* Espaçamento entre os campos */
+}
+
+form input, form textarea, form button {
+    padding: 0.5rem; /* Espaçamento interno */
+    font-size: 1rem; /* Tamanho do texto */
+    border: 1px solid #ddd; /* Borda fina */
+    border-radius: 5px; /* Bordas arredondadas */
+}
+
+form button {
+    background: #333; /* Fundo preto */
+    color: white; /* Texto branco */
+    cursor: pointer; /* Altera o cursor para indicar clique */
+}
+
+form button:hover {
+    background: #555; /* Muda a cor ao passar o mouse */
+}
+
+/* Rodapé */
+footer {
+    text-align: center; /* Centraliza o texto */
+    background: #333; /* Fundo preto */
+    color: white; /* Texto branco */
+    padding: 1rem; /* Espaçamento interno */
+}
