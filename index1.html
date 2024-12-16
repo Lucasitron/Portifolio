@@ -1,37 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu portifólio</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
-
+    <title>Meu Portfólio</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
+
+
 <body>
+
+    
     <header>
-        <h1 id = "cabecalho"><a  href="#home">Lucasitron</a></h1>
-        <h2>O céu continuará sendo um limite até que o ultrapassemos!</h2>
+        <!-- Coloque aqui seu nome e links do menu -->
+         <h1>Lucasitron</h1>
+         <h2>O céu continuará sendo um limite até que o ultrapassemos!</h2>
+         <p id = "saudacao"></p>
+         
     </header>
     <nav>
         <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#sobre">Sobre</a></li>
-            <li><a href="#projetos">Projetos</a></li>
-            <li><a href="#contato">Contato</a></li>
+            <li><a href="#Sobre">Sobre</a></li>
+            <li><a href="#Projetos">Projetos</a></li>
+            <li><a href="#Contato">Contato</a></li>
         </ul>
     </nav>
-
-    <!--Corpo-->
     <main>
-        <!--Seções home, sobre, projetos e contato-->
-        <section id = "home">
-            <h2>Sinta-se em casa</h2>
-            <p>Você está prestes a alcançar o próximo nível para seu negócio</p>
-        </section>
-
+        <!-- Adicione aqui as seções: Sobre, Projetos, Contato -->
          <!--Sobre-->
-         <section id = "sobre">
+         <section id = "Sobre">
             <h2>Quem sou eu?!</h2>
             <p>Eu sou apenas um rapaz, latino-americano sem dinheiro no banco. Um jovem senhor 
             graduando em Engenharia da computação, na Universidade Federal do Estado do Pará.
@@ -39,8 +37,8 @@
             para sobreviver.</p>
          </section>
 
-         <!--Projetos-->
-         <section id = "projetos">
+        <!--Projetos-->
+         <section id = "Projetos">
             <h2>
                 Coisas que eu sei
             </h2>
@@ -73,14 +71,18 @@
                 <!-- Botão para enviar o formulário -->
             </form>
          </section>
+
     </main>
-
-    <!--Rodapé-->
     <footer>
+        <!-- Rodapé -->
         <p>&copy; 2024 Lucasitron. Todos os direitos reservados.</p>
+        <!-- Texto de direitos autorais -->
     </footer>
+    <script src="script.js"></script>
 
-    <!--De volta ao inicio-->
-    <button id = "topo" aria-label="Topo">&uArr;</button>
+    <!--botao para voltar ao topo-->   
+    <button id="backToTop" aria-label="Voltar ao topo">&uarr;</button>
+
+    
 </body>
 </html>

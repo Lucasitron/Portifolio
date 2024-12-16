@@ -5,34 +5,41 @@
     box-sizing: border-box; /* Faz com que largura/altura incluam bordas e preenchimentos */
 }
 
-/* Estilo geral da página */
-body {
+body{
     font-family: Arial, sans-serif; /* Fonte legível e limpa */
     line-height: 1.6; /* Altura das linhas para melhorar a leitura */
     color: #333; /* Cor do texto: cinza escuro */
     background-color: #f4f4f4; /* Cor de fundo: cinza claro */
 }
 
-/* Cabeçalho */
-header {
+header{
     background: #333; /* Fundo preto */
     color: white; /* Texto branco */
     text-align: center; /* Centraliza o texto */
     padding: 2rem 1rem; /* Espaçamento interno */
 }
 
-header h1 {
-    font-size: 2.5rem; /* Tamanho grande para o título principal */
+h1{
+    font-family: 'Franklin Gothic Medium';
+    font-style: normal;
+    font-size: 3.5rem;
+    a{
+        color:  rgb(235, 235, 235);
+        text-decoration: none;
+    }
+        
 }
 
-header p {
-    font-size: 1.2rem; /* Tamanho médio para o subtítulo */
+h2{
+    font-style: normal;
+    font-size: 2rem;
 }
 
-/* Navegação */
-nav {
-    background: #444; /* Fundo cinza escuro */
-    padding: 1rem; /* Espaçamento interno */
+/*Navegação*/
+
+nav{
+    background: #444;
+    padding: 1rem;
 }
 
 nav ul {
@@ -54,23 +61,25 @@ nav ul li a:hover {
     background: #777; /* Altera o fundo ao passar o mouse */
 }
 
-/* Conteúdo principal */
-main {
-    padding: 2rem; /* Espaçamento ao redor */
+
+/*estilo do corpo do texto*/
+main{
+    padding: 2rem;
+    color: rgb(27, 28, 29);
 }
 
 section {
     margin-bottom: 2rem; /* Espaçamento entre as seções */
 }
 
-/* Projetos */
-.projetos {
+/* Home */
+.home {
     display: flex; /* Organiza os projetos em linha */
     flex-wrap: wrap; /* Permite que quebrem linha se necessário */
     gap: 1rem; /* Espaçamento entre os projetos */
 }
 
-.projetos article {
+.home article {
     background: white; /* Fundo branco */
     border: 1px solid #ddd; /* Borda fina e cinza */
     border-radius: 5px; /* Bordas arredondadas */
@@ -78,8 +87,8 @@ section {
     flex: 1 1 calc(50% - 1rem); /* Tamanho flexível, ocupa metade da linha */
 }
 
-/* Formulário */
-form {
+/*Formulario*/
+form{
     display: flex; /* Organiza os campos em coluna */
     flex-direction: column; /* Coloca os itens na vertical */
     gap: 1rem; /* Espaçamento entre os campos */
@@ -110,37 +119,36 @@ footer {
     padding: 1rem; /* Espaçamento interno */
 }
 
+/*Botão topo*/
 /* Botão "Voltar ao Topo" */
-#backToTop {
-    position: fixed; /* Fixa na tela */
-    bottom: 20px; /* Distância da parte inferior */
-    right: 20px; /* Distância da lateral direita */
-    width: 50px; /* Largura do botão */
-    height: 50px; /* Altura do botão */
-    background-color: #333; /* Cor de fundo */
-    color: white; /* Cor do texto (seta) */
+#topo {
+    position: fixed; /* Fixa o botão na tela */
+    bottom: 1rem; /* Distância da parte inferior */
+    right: 1rem; /* Distância da lateral direita */
+    width: 3rem; /* Largura do botão */
+    height: 3rem; /* Altura do botão */
+    background-color: #000; /* Cor de fundo */
+    color: white; /* Cor da seta */
     border: none; /* Remove bordas */
     border-radius: 50%; /* Torna o botão circular */
-    font-size: 24px; /* Tamanho da seta */
-    display: none; /* Começa invisível */
-    justify-content: center; /* Centraliza o texto horizontalmente */
-    align-items: center; /* Centraliza o texto verticalmente */
+    font-size: 1.5rem; /* Tamanho da seta */
+    display: flex; /* Exibe como flexbox */
+    justify-content: center; /* Centraliza conteúdo horizontalmente */
+    align-items: center; /* Centraliza conteúdo verticalmente */
     cursor: pointer; /* Muda o cursor ao passar por cima */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para destacar */
-    transition: opacity 0.3s ease-in-out; /* Transição suave para aparecer/desaparecer */
-}
-
-/* Efeito hover (quando o mouse está sobre o botão) */
-#backToTop:hover {
-    background-color: #555; /* Cor mais clara ao passar o mouse */
-}
-
-#backToTop.show {
-    display: flex; /* Exibe o botão */
-    opacity: 1; /* Totalmente visível */
-}
-
-#backToTop {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
     opacity: 0; /* Inicialmente invisível */
+    transform: scale(0); /* Começa com tamanho zero */
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
+/* Efeito hover */
+#topo:hover {
+    background-color: #555; /* Cor ao passar o mouse */
+}
+
+/* Botão visível */
+#topo.show {
+    opacity: 1; /* Torna visível */
+    transform: scale(1); /* Volta ao tamanho normal */
+}
