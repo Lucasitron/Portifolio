@@ -1,8 +1,8 @@
 # lucasitron
 
-![GitHub repo size](https://img.shields.io/github/repo-size/lucasitron/lucasitron?style=for-the-badge)
-![GitHub language count](https://img.shields.io/github/languages/count/lucasitron/lucasitron?style=for-the-badge)
-![GitHub license](https://img.shields.io/github/license/lucasitron/lucasitron?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/Lucasitron/Portifolio?style=for-the-badge)
+![GitHub language count](https://img.shields.io/github/languages/count/Lucasitron/Portifolio?style=for-the-badge)
+![GitHub license](https://img.shields.io/github/license/Lucasitron/Portifolio?style=for-the-badge)
 
 > Portfólio pessoal de **Lucas G. S. Sousa** — desenvolvedor Back-end, graduando em Engenharia da Computação pela UFPA-CAMTUC, com foco em IoT, sistemas embarcados e Inteligência Artificial.
 
@@ -64,14 +64,14 @@ Para instalar o lucasitron, siga estas etapas:
 
 **Linux e macOS:**
 ```bash
-git clone https://github.com/lucasitron/lucasitron.git
+git clone https://github.com/Lucasitron/Portifolio.git
 cd lucasitron
 npm install
 ```
 
 **Windows:**
 ```bash
-git clone https://github.com/lucasitron/lucasitron.git
+git clone https://github.com/Lucasitron/Portifolio.git
 cd lucasitron
 npm install
 ```
