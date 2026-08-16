@@ -4,7 +4,7 @@
   "private": true,
   "description": "Portfólio pessoal de Lucas G. S. Sousa — Desenvolvedor Back-end, Engenharia de Computação, IoT e IA.",
   "scripts": {
-    "start": "npx --yes serve -l 3000 .",
+    "serve": "npx --yes serve -l 3000 .",
     "dev": "npx --yes serve -l 3000 .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
