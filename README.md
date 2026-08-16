@@ -2,16 +2,19 @@
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/lucasitron/lucasitron?style=for-the-badge)
 ![GitHub language count](https://img.shields.io/github/languages/count/lucasitron/lucasitron?style=for-the-badge)
-![GitHub forks](https://img.shields.io/github/forks/lucasitron/lucasitron?style=for-the-badge)
-![Bitbucket open issues](https://img.shields.io/bitbucket/issues/lucasitron/lucasitron?style=for-the-badge)
-![Bitbucket open pull requests](https://img.shields.io/bitbucket/pr-raw/lucasitron/lucasitron?style=for-the-badge)
+![GitHub license](https://img.shields.io/github/license/lucasitron/lucasitron?style=for-the-badge)
 
-> Portifólio pessoal para divulgação de projetos executados.
+> Portfólio pessoal de **Lucas G. S. Sousa** — desenvolvedor Back-end, graduando em Engenharia da Computação pela UFPA-CAMTUC, com foco em IoT, sistemas embarcados e Inteligência Artificial.
+
+Este projeto é meu portfólio profissional: um site estático para apresentar quem sou, minhas habilidades e os projetos que desenvolvo — desde APIs e arquiteturas de software até dispositivos embarcados com ESP32 (CNC, bengala inteligente assistiva e sistemas para FabLab). Cada projeto possui uma página de detalhes com galeria, stack e resultados.
 
 ## 📁 Estrutura do Projeto
 
 ```
 ├── index.html
+├── vercel.json
+├── robots.txt
+├── sitemap.xml
 ├── pages/
 │   ├── css/
 │   │   ├── style.css
@@ -24,6 +27,7 @@
 │   │       ├── bengala.html
 │   │       ├── cnc.html
 │   │       ├── sigfab.html
+│   │       ├── mockup-triaJus.html
 │   │       └── _template-projeto.html
 │   ├── js/
 │   │   ├── app.js
@@ -42,10 +46,11 @@ O projeto ainda está em desenvolvimento e as próximas atualizações serão vo
 - [x] Páginas principais (Início, Habilidades, Projetos, Contato)
 - [x] Páginas de detalhes dos projetos (CNC, SigFab, Bengala)
 - [x] Interface responsiva
+- [x] Deploy e SEO (Vercel, sitemap e robots.txt)
 - [ ] Novos projetos e atualização de conteúdo
 - [ ] Integração com API
 
-## 💻 Pré-requisitos
+## 💻 Copia mas não faz igual
 
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 
@@ -53,7 +58,7 @@ Antes de começar, verifique se você atendeu aos seguintes requisitos:
 - Você tem uma máquina **Windows / Linux / Mac**
 - Você instalou um editor de código (recomendado: **VS Code**)
 
-## 🚀 Instalando lucasitron
+## 🚀 Instalando
 
 Para instalar o lucasitron, siga estas etapas:
 
@@ -71,13 +76,13 @@ cd lucasitron
 npm install
 ```
 
-## ☕ Usando lucasitron
+## ☕ Usando
 
 Para usar lucasitron, siga estas etapas:
 
 ```bash
 # Iniciar o servidor local
-npm start
+npm run serve
 
 # Ou em modo desenvolvimento
 npm run dev
@@ -85,21 +90,17 @@ npm run dev
 
 Abra o navegador e acesse `http://localhost:3000`
 
-## 📫 Contribuindo para lucasitron
+## 🚀 Deploy
 
-Para contribuir com lucasitron, siga estas etapas:
+O site é estático e roda na Vercel sem build. Para subir:
 
-1. Bifurque este repositório
-2. Crie um branch: `git checkout -b <nome_branch>`
-3. Faça suas alterações e confirme-as: `git commit -m '<mensagem_commit>'`
-4. Envie para o branch original: `git push origin <nome_branch>`
-5. Crie a solicitação de pull
+```bash
+npx vercel --prod
+```
 
-Como alternativa, consulte a documentação do GitHub em [como criar uma solicitação pull](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
+## 🤝 Quem sou eu
 
-## 🤝 Colaboradores
-
-Agradecemos às seguintes pessoas que contribuíram para este projeto:
+Graduando em Engenharia da Computação pela UFPA-CAMTUC
 
 <table>
   <tr>
@@ -113,10 +114,6 @@ Agradecemos às seguintes pessoas que contribuíram para este projeto:
     </td>
   </tr>
 </table>
-
-## 😄 Seja um dos contribuidores
-
-Quer fazer parte desse projeto? Clique [AQUI](CONTRIBUTING.md) e leia como contribuir.
 
 ## 📝 Licença
 
