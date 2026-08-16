@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- EDITAR: título + description -->
+    <meta name="description" content="Descrição curta do projeto para SEO.">
+    <title>NOME DO PROJETO | lucasitron</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/projeto.css">
+    <script src="../../js/projeto.js" defer></script>
+</head>
+
+<body>
+    <!-- Topbar (igual ao index) -->
+    <nav class="topbar" aria-label="Navegação principal">
+        <a class="logo" href="../../../index.html">&lt;lucasitron /&gt;</a>
+        <ul>
+            <li><a href="../../../index.html#home">Início</a></li>
+            <li><a href="../../../index.html#habilidades">Habilidades</a></li>
+            <li><a class="active" href="../../../index.html#projetos">Projetos</a></li>
+            <li><a href="../../../index.html#contato">Contato</a></li>
+        </ul>
+    </nav>
+
+    <!-- Botão voltar -->
+    <a class="proj-back" href="../../../index.html#projetos">
+        ← Voltar aos projetos
+    </a>
+
+    <!-- ══════════════════════════════════════════════════════
+         HERO — imagem de capa + título
+         Imagem recomendada: 1200×630px, formato .webp
+         ══════════════════════════════════════════════════════ -->
+    <section class="proj-hero">
+        <div class="proj-cover-wrap">
+            <!-- EDITAR: caminho da imagem de capa -->
+            <img class="proj-cover"
+                 src="../../IMG/SLUG-DO-PROJETO/cover.webp"
+                 alt="Imagem de capa do projeto"
+                 loading="eager">
+            <div class="proj-cover-overlay"></div>
+        </div>
+        <div class="proj-hero-copy">
+            <div class="proj-hero-meta">
+                <!-- EDITAR: emoji + categoria -->
+                <span class="card-kicker">⚙️ Software</span>
+                <!-- EDITAR: trocar --active por --done se concluído -->
+                <span class="project-status project-status--active">
+                    <span class="status-dot"></span> Em andamento
+                </span>
+            </div>
+            <!-- EDITAR: título do projeto -->
+            <h1 class="proj-title">NOME DO PROJETO</h1>
+            <!-- EDITAR: subtítulo de uma linha -->
+            <p class="proj-subtitle">Uma linha descrevendo o propósito do projeto.</p>
+            <div class="proj-tags">
+                <!-- EDITAR: adicionar/remover tags. Ver tokens data-tech no plano -->
+                <span class="tag" data-tech="node">Node.js</span>
+                <span class="tag" data-tech="backend">Back-end</span>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <!-- ══════════════════════════════════════════════════
+             GALERIA — máximo recomendado: 6 imagens
+             Imagens: 800×600px, formato .webp
+             Atributo data-caption: legenda exibida no hover e lightbox
+             ══════════════════════════════════════════════════ -->
+        <div class="proj-gallery">
+            <h2 class="reveal">Galeria</h2>
+            <!-- EDITAR: trocar cols-2 | cols-3 para definir colunas fixas
+                 (ou remover a classe para auto-fit responsivo) -->
+            <div class="gallery-grid cols-2 reveal">
+                <!-- COPIAR este bloco para cada imagem -->
+                <div class="proj-img" data-caption="Legenda da imagem 1">
+                    <img src="../../IMG/SLUG-DO-PROJETO/img1.webp"
+                         alt="Descrição acessível da imagem 1"
+                         loading="lazy">
+                    <span class="proj-img-caption">Legenda da imagem 1</span>
+                </div>
+                <div class="proj-img" data-caption="Legenda da imagem 2">
+                    <img src="../../IMG/SLUG-DO-PROJETO/img2.webp"
+                         alt="Descrição acessível da imagem 2"
+                         loading="lazy">
+                    <span class="proj-img-caption">Legenda da imagem 2</span>
+                </div>
+                <!-- FIM DO BLOCO — repetir quantas vezes precisar -->
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             DETALHES — texto longo + metadados
+             ══════════════════════════════════════════════════ -->
+        <div class="proj-details">
+            <div class="proj-details-grid">
+
+                <!-- Coluna esquerda: texto descritivo -->
+                <div class="proj-text reveal">
+                    <h2>Sobre o projeto</h2>
+                    <!-- EDITAR: descreva o contexto e objetivo -->
+                    <p>Contexto e motivação do projeto. O que ele resolve e para quem.</p>
+
+                    <h2>Desafios e soluções</h2>
+                    <!-- EDITAR: principais desafios técnicos -->
+                    <p>Principais obstáculos encontrados e como foram resolvidos.</p>
+
+                    <h2>Resultados</h2>
+                    <!-- EDITAR: impacto, métricas, aprendizados -->
+                    <p>Resultados obtidos, métricas de sucesso e aprendizados.</p>
+                </div>
+
+                <!-- Coluna direita: metadados do projeto -->
+                <aside class="reveal">
+                    <div class="proj-meta-card">
+                        <h3>📋 Detalhes</h3>
+                        <dl>
+                            <!-- EDITAR: preencher todos os campos -->
+                            <dt>Ano</dt>
+                            <dd>2024</dd>
+
+                            <dt>Função</dt>
+                            <dd>Desenvolvedor Back-end</dd>
+
+                            <dt>Duração</dt>
+                            <dd>3 meses</dd>
+
+                            <dt>Stack</dt>
+                            <dd>Node.js, PostgreSQL</dd>
+
+                            <dt>Status</dt>
+                            <dd>Em andamento</dd>
+                        </dl>
+                    </div>
+
+                    <!-- Links de ação -->
+                    <div class="proj-links">
+                        <!-- EDITAR: substituir href. Remover blocos não usados -->
+                        <a href="#" class="btn" target="_blank" rel="noopener">
+                            🌐 Ver projeto ao vivo
+                        </a>
+                        <a href="https://github.com/lucasitron" class="btn btn-secondary"
+                           target="_blank" rel="noopener">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                            Ver no GitHub
+                        </a>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">&lt;lucasitron /&gt;</div>
+            <p class="footer-tagline">Engenharia da Computação · UFPA - CAMTUC</p>
+            <div class="footer-divider"></div>
+            <p class="footer-copy">Lucas Gonçalves Soares Sousa &mdash; 2025</p>
+        </div>
+    </footer>
+</body>
+</html>

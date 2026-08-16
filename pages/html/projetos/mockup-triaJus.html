@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador — TriaJus</title>
+<style>
+/* ============================================================
+   PÁGINA: tema escuro do site do portfólio
+   MONITORES: estilo fiel à aplicação original (TriaJus)
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+/* --- Paleta do site (dark) --- */
+:root{
+  --fundo:      #0a0e17;
+  --superficie: #121a29;
+  --superficie2:#0f1522;
+  --borda:      #1e2a41;
+  --primaria:   #38bdf8;
+  --secundaria: #a78bfa;
+  --terciaria:  #34d399;
+  --alerta:     #f59e0b;
+  --erro:       #f87171;
+  --texto:      #e5eefc;
+  --texto2:     #8b9bb8;
+  --radius:     12px;
+}
+/* --- Paleta da aplicação (monitores) --- */
+:root{
+  --app-buton:  #2d308e;
+  --app-central:#f0f0f0;
+  --app-senha:  #fafafa;
+  --app-forum:  #2226a8;
+  --app-paragrafo: #004aad;
+  --app-grad:   linear-gradient(135deg, #2226a8, #1a1d82);
+  --app-bezel:  #cfd7e6;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html,body{ background:var(--fundo); }
+body{
+  font-family:'Inter', 'Segoe UI', system-ui, Arial, sans-serif;
+  color:var(--texto); line-height:1.5; font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============================================================
+   CABEÇALHO EXPANSÍVEL (dark) — clique na barra para descrição
+   ============================================================ */
+.cabecalho{
+  border-bottom:1px solid var(--borda); cursor:pointer; user-select:none;
+  background:linear-gradient(180deg, rgba(56,189,248,.07), transparent);
+}
+.cab-bar{ display:flex; align-items:center; gap:12px 16px; flex-wrap:wrap; padding:13px 18px; }
+.cab-logo{
+  width:40px; height:40px; border-radius:10px; display:grid; place-items:center;
+  background:linear-gradient(135deg, var(--primaria), var(--secundaria));
+  box-shadow:0 0 18px rgba(56,189,248,.45); font-weight:800; font-size:14px; color:#06121f; letter-spacing:1px;
+}
+.cab-bar h1{ font-size:17px; font-weight:700; }
+.cab-bar .sub{ font-size:12px; color:var(--texto2); }
+.badges{ display:flex; gap:6px; flex-wrap:wrap; }
+.badge{
+  font-size:10px; font-weight:700; letter-spacing:.6px; text-transform:uppercase;
+  padding:3px 9px; border-radius:999px; border:1px solid;
+}
+.badge.status{ color:var(--terciaria); border-color:rgba(52,211,153,.4); background:rgba(52,211,153,.08); }
+.badge.dados{ color:var(--alerta); border-color:rgba(245,158,11,.4); background:rgba(245,158,11,.08); }
+.hint{ margin-left:auto; display:flex; align-items:center; gap:6px; font-size:11px; color:var(--texto2); font-weight:600; }
+.hint .chev{ display:inline-block; transition:transform .3s ease; }
+.cabecalho.aberto .hint .chev{ transform:rotate(180deg); }
+.descricao-wrap{ display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s ease; }
+.cabecalho.aberto .descricao-wrap{ grid-template-rows:1fr; }
+.descricao-inner{ overflow:hidden; }
+.descricao{
+  padding:0 18px 18px; max-width:1180px; margin:0 auto;
+  border-top:1px solid var(--borda); padding-top:14px; font-size:13px;
+}
+.descricao p{ margin-bottom:10px; color:var(--texto2); }
+.descricao b{ color:var(--texto); }
+.desc-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; }
+.desc-card{
+  background:var(--superficie2); border:1px solid var(--borda); border-radius:10px;
+  padding:10px 12px; font-size:12.5px;
+}
+.desc-card h4{ font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--primaria); margin-bottom:5px; }
+.desc-card ul{ list-style:none; }
+.desc-card li{ padding:2px 0 2px 14px; position:relative; color:var(--texto2); }
+.desc-card li::before{ content:'›'; position:absolute; left:2px; color:var(--primaria); font-weight:700; }
+
+/* ============================================================
+   LAYOUT (dark)
+   ============================================================ */
+.conteudo{ padding:16px; display:flex; flex-direction:column; gap:16px; max-width:1180px; margin:0 auto; }
+.secao{
+  background:var(--superficie); border:1px solid var(--borda); border-radius:var(--radius);
+  padding:14px 16px; box-shadow:0 0 0 1px rgba(255,255,255,.02), 0 8px 24px rgba(0,0,0,.35);
+}
+.secao-titulo{ display:flex; align-items:center; gap:8px; margin-bottom:2px; }
+.secao-titulo .icone{
+  width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
+  font-size:11px; background:var(--superficie2); border:1px solid var(--borda);
+}
+.secao-titulo h2{ font-size:14px; font-weight:700; }
+.secao-desc{ font-size:12.5px; color:var(--texto2); margin-bottom:12px; }
+.secao-desc b{ color:var(--texto); }
+
+/* Botões do site (dark) */
+.btn{
+  font-family:inherit; font-size:12.5px; font-weight:600; color:var(--texto);
+  background:var(--superficie2); border:1px solid var(--borda);
+  padding:8px 16px; border-radius:8px; cursor:pointer;
+  transition:border-color .15s, box-shadow .15s, transform .05s;
+}
+.btn:hover{ border-color:var(--primaria); box-shadow:0 0 12px rgba(56,189,248,.25); }
+.btn:active{ transform:translateY(1px); }
+.btn.primario{
+  background:linear-gradient(135deg, rgba(56,189,248,.18), rgba(167,139,250,.18));
+  border-color:rgba(56,189,248,.55);
+}
+.btn.primario:hover{ box-shadow:0 0 16px rgba(56,189,248,.4); }
+.btn.perigo{ border-color:rgba(248,113,113,.5); color:var(--erro); }
+.btn.perigo:hover{ box-shadow:0 0 12px rgba(248,113,113,.3); }
+.btn.sucesso{ border-color:rgba(52,211,153,.5); color:var(--terciaria); }
+.btn.sucesso:hover{ box-shadow:0 0 12px rgba(52,211,153,.3); }
+.btn.small{ padding:5px 11px; font-size:11.5px; border-radius:6px; }
+.btn.ativo{ border-color:var(--primaria); box-shadow:0 0 12px rgba(56,189,248,.35); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+
+.controles{ display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin-bottom:14px; }
+.controle{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--texto2); font-weight:600; }
+
+/* Toggle ligar/desligar (dark) */
+.toggle{ position:relative; display:inline-block; width:38px; height:21px; vertical-align:middle; }
+.toggle input{ opacity:0; width:0; height:0; }
+.toggle .slider{
+  position:absolute; inset:0; border-radius:999px; background:var(--superficie2);
+  border:1px solid var(--borda); cursor:pointer; transition:background .2s, border-color .2s;
+}
+.toggle .slider::before{
+  content:''; position:absolute; width:15px; height:15px; border-radius:50%;
+  left:3px; top:3px; background:var(--texto2); transition:transform .2s, background .2s;
+}
+.toggle input:checked + .slider{ background:rgba(52,211,153,.2); border-color:var(--terciaria); }
+.toggle input:checked + .slider::before{ transform:translateX(17px); background:var(--terciaria); }
+
+/* ============================================================
+   MONITORES — estilo ORIGINAL da aplicação (claro)
+   ============================================================ */
+.monitores{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+.col-dir{ display:flex; flex-direction:column; gap:14px; }
+
+.monitor{
+  background:var(--app-bezel); border-radius:12px; padding:9px;
+  box-shadow:inset 0 0 0 1px #b9c4d8, 0 6px 16px rgba(0,0,0,.45);
+  transition:box-shadow .3s ease;
+}
+/* Destaque do monitor em operação (modo automático) */
+.monitor.em-destaque{
+  box-shadow:0 0 0 2px var(--app-forum), 0 0 26px rgba(34,38,168,.65);
+}
+.monitor.em-destaque .led{ animation:led-pisca .7s steps(2) infinite; }
+@keyframes led-pisca{ 50%{ opacity:.2; } }
+.monitor-topo{
+  display:flex; align-items:center; gap:8px; padding:2px 4px 8px;
+  font-size:10px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; color:#5f6c85;
+}
+.monitor-topo .led{ width:8px; height:8px; border-radius:50%; background:#28a745; box-shadow:0 0 6px #28a745; }
+.monitor-topo .estado{ margin-left:auto; color:#5f6c85; letter-spacing:.5px; }
+.monitor-tela{
+  background:var(--app-central); border-radius:7px; overflow:hidden;
+  display:flex; flex-direction:column; position:relative;
+}
+
+/* --- TOTEM (retrato ~ 9:11,5) --- */
+.monitor-totem .monitor-tela{ aspect-ratio:9/11.5; }
+.tela{ display:none; flex:1; flex-direction:column; padding:14px; }
+.tela.ativa{ display:flex; animation:slideIn .25s ease; }
+@keyframes slideIn{ from{ opacity:0; transform:translateX(10px);} to{ opacity:1; transform:none;} }
+/* contorno suave na tela atualmente operada */
+.tela.ativa{ box-shadow:inset 0 0 0 2px rgba(34,38,168,.28); }
+
+.tela-cab{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  color:var(--app-forum); font-weight:800; font-size:11px; letter-spacing:1px;
+  padding-bottom:10px; border-bottom:2px solid var(--app-forum); margin-bottom:12px;
+}
+.tela-cab .mini-logo{
+  width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
+  background:var(--app-grad); color:#fff; font-size:9px; font-weight:800;
+}
+
+/* Tela 01 — CPF */
+.tela-cpf{ align-items:center; justify-content:center; gap:16px; text-align:center; }
+.tela-cpf h1{ font-size:24px; font-family:Arial, Helvetica, sans-serif; color:var(--app-paragrafo); font-weight:700; }
+.tela-cpf input{
+  width:100%; max-width:250px; border:3px solid var(--app-forum); border-radius:5px;
+  padding:9px; font-size:14px; font-family:inherit; outline:0; text-align:center;
+}
+.tela-cpf .cpf-msg{ font-size:12px; color:var(--erro); min-height:16px; font-weight:600; }
+.tela-cpf .cpf-msg.ok{ color:#28a745; }
+
+/* Tela 02 — Serviços */
+.tela-servicos{ align-items:center; justify-content:center; gap:18px; text-align:center; }
+.tela-servicos h1{ font-size:24px; font-family:Arial, Helvetica, sans-serif; color:var(--app-paragrafo); font-weight:700; }
+.btn-servico{
+  width:200px; height:74px; border-radius:10px; border:none; cursor:pointer;
+  color:#f0f8ff; background:var(--app-buton); font-size:16px; font-weight:700;
+  font-family:Arial, Helvetica, sans-serif; transition:all .25s ease;
+}
+.btn-servico:hover{ box-shadow:0 8px 20px rgba(45,48,142,.4); transform:translateY(-2px); }
+.btn-servico:disabled{ background:#a9b3c9; cursor:not-allowed; transform:none; }
+
+/* Tela 03 — Informações requeridas */
+.tela-info{ align-items:center; justify-content:center; gap:10px; text-align:center; }
+.tela-info h1{ font-size:24px; font-family:Arial, Helvetica, sans-serif; color:var(--app-paragrafo); font-weight:700; }
+.grupo-sel{ font-size:16px; font-weight:700; color:#1a202c; font-family:Arial, Helvetica, sans-serif; }
+.horarios{ display:flex; gap:14px; justify-content:center; margin:6px 0 10px; flex-wrap:wrap; }
+.btn-hora{
+  background:var(--app-buton); color:#f0f8ff; border:none; border-radius:10px;
+  width:58px; height:58px; font-size:16px; font-weight:700; cursor:pointer; transition:all .25s ease;
+}
+.btn-hora:hover{ box-shadow:0 8px 20px rgba(45,48,142,.4); transform:translateY(-2px); }
+.btn-hora:disabled{ background:#a9b3c9; cursor:not-allowed; transform:none; }
+.btn-hora.sel{ background:#28a745; }
+.opcoes{ display:flex; flex-direction:column; gap:10px; margin:6px 0 10px; }
+.opcao-linha{
+  display:flex; align-items:center; justify-content:space-between; gap:18px;
+  font-size:13px; font-weight:700; font-family:Arial, Helvetica, sans-serif; color:#1a202c;
+  background:#fff; border:2px solid #dbe2ee; border-radius:8px; padding:8px 14px; cursor:pointer;
+}
+.opcao-linha input{ width:18px; height:18px; cursor:pointer; accent-color:var(--app-forum); }
+.opcao-linha.sel{ border-color:var(--app-forum); background:#f0f3ff; }
+
+/* Tela 04 — Comprovante (réplica do 04-impressao.html) */
+.comprovante{
+  background:var(--app-senha); border:2px solid var(--app-forum); border-radius:6px;
+  overflow:hidden; text-align:center; font-family:Arial, Helvetica, sans-serif;
+}
+.comp-cab{
+  background:var(--app-forum); color:#fff; padding:6px 10px; font-size:10px; font-weight:700;
+  border-bottom:2px solid var(--app-buton); letter-spacing:.5px;
+}
+.comp-data{
+  display:flex; justify-content:center; gap:16px; font-size:9px; font-weight:700; color:#1a202c;
+  background:rgba(255,255,255,.9); border:1px solid var(--app-forum); border-radius:4px;
+  margin:8px auto 6px; padding:3px 8px; width:fit-content;
+}
+.comp-data strong{ color:var(--app-forum); }
+.comp-cpf{
+  background:#f0f8ff; border-left:3px solid var(--app-forum); border-radius:4px;
+  margin:0 6px; padding:4px; font-size:11px; font-weight:700; color:var(--app-forum);
+}
+.comp-senha{
+  background:var(--app-grad); border-radius:8px; margin:8px 6px; padding:10px;
+  color:#fff; display:flex; flex-direction:column; align-items:center; gap:2px;
+}
+.comp-senha .num{ font-size:42px; font-weight:700; line-height:1; text-shadow:2px 2px 4px rgba(0,0,0,.3); }
+.comp-senha .serv{ font-size:13px; font-weight:700; }
+.comp-hora{
+  background:var(--app-buton); color:#fff; border-radius:6px; margin:0 6px 8px;
+  padding:6px; font-size:11px; font-weight:700;
+}
+.comp-hora strong{ margin-right:6px; }
+
+/* Indicadores de tela do totem */
+.pontos-tela{ display:flex; gap:6px; justify-content:center; padding:8px 0 2px; }
+.pontos-tela i{ width:8px; height:8px; border-radius:50%; background:#c3ccdd; transition:all .25s; }
+.pontos-tela i.ativo{ background:var(--app-forum); box-shadow:0 0 6px var(--app-forum); }
+.totem-status{ text-align:center; font-size:10.5px; color:#5a6a85; padding:2px 8px 6px; font-weight:600; }
+
+/* Botão VOLTAR (réplica do link "VOLTAR PARA O INÍCIO" do app) */
+.btn-voltar{
+  align-self:flex-start; display:inline-flex; align-items:center; gap:4px;
+  background:none; border:none; color:var(--app-forum); cursor:pointer;
+  font-size:10.5px; font-weight:800; letter-spacing:.5px; padding:2px 4px; margin-bottom:6px;
+  border-bottom:1px solid transparent; transition:border-color .2s;
+}
+.btn-voltar:hover{ border-color:var(--app-forum); }
+/* Em modo automático, os controles do totem ficam ocultos (evita interferência) */
+.monitor-totem.auto .btn-voltar,
+.monitor-totem.auto .tela-cpf .btn,
+.monitor-totem.auto .btn-servico,
+.monitor-totem.auto .btn-hora,
+.monitor-totem.auto .opcao-linha,
+.monitor-totem.auto #info-confirmar,
+.monitor-totem.auto #comp-cancelar,
+.monitor-totem.auto #comp-confirmar{ display:none; }
+.monitor-totem.auto .tela-cpf input{ pointer-events:none; opacity:.6; }
+
+/* --- PAINEL OPERACIONAL (retrato ~ 9:8) --- */
+.monitor-op .monitor-tela{ aspect-ratio:9/8; }
+.op-cab{
+  background:var(--app-forum); color:#fff; text-align:center; padding:7px;
+  font-size:11px; font-weight:800; letter-spacing:1.5px; border-bottom:2px solid var(--app-buton);
+}
+.op-filas{ flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:8px; }
+.op-fila{
+  background:#fff; border:1px solid #dbe2ee; border-left:4px solid var(--app-forum);
+  border-radius:6px; padding:7px 9px;
+}
+.op-fila .op-titulo{ display:flex; align-items:center; gap:6px; font-size:11px; font-weight:800; color:#1a202c; }
+.op-fila .op-titulo .cont{
+  margin-left:auto; font-size:10px; color:var(--app-forum); background:#eef1ff;
+  padding:1px 7px; border-radius:999px; font-weight:700;
+}
+.op-fila .op-itens{ display:flex; gap:4px; flex-wrap:wrap; margin:5px 0 7px; min-height:20px; }
+.op-chip{
+  font-family:'Courier New', monospace; font-size:10px; font-weight:700; color:var(--app-forum);
+  background:#f0f2ff; border:1px solid #d3d9f5; border-radius:4px; padding:2px 6px;
+  animation:entrar .3s ease;
+}
+@keyframes entrar{ from{ transform:scale(.6); opacity:0; } to{ transform:scale(1); opacity:1; } }
+.op-aviso{ font-size:10px; color:#5a6a85; text-align:center; padding:4px; font-weight:600; }
+/* Botão CHAMAR "pressionado" pelo operador (modo automático) */
+.op-fila .btn.pressionado{
+  transform:scale(.94); background:#1a1d82; box-shadow:0 4px 12px rgba(45,48,142,.55);
+}
+
+/* --- TV — PAINEL DE CHAMADAS (réplica do chamador.html) --- */
+.monitor-tv .monitor-tela{ aspect-ratio:16/9; }
+.tv-header{
+  display:flex; align-items:center; justify-content:center; gap:18px;
+  background:var(--app-buton); color:#fff; padding:5px 12px; font-size:11px; font-weight:700;
+}
+.tv-header .img-logo{
+  width:22px; height:22px; border-radius:6px; display:grid; place-items:center;
+  background:var(--app-grad); color:#fff; font-size:8px; font-weight:800; border:1px solid rgba(255,255,255,.4);
+}
+.tv-data{ display:flex; flex-direction:column; align-items:flex-end; font-size:8.5px; line-height:1.3; color:#e8ecff; }
+.tv-main{ flex:1; display:flex; overflow:hidden; }
+.tv-col{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; padding:6px; border-right:4px solid var(--app-paragrafo);
+}
+.tv-col:last-child{ border-right:none; }
+.tv-rotulo{ font-size:9px; font-weight:800; letter-spacing:2px; color:var(--app-paragrafo); }
+.tv-card{
+  background:var(--app-senha); border:2px solid var(--app-forum); border-radius:5px;
+  width:100%; max-width:250px; overflow:hidden; text-align:center;
+}
+.tv-card .tc-cab{ background:var(--app-forum); color:#fff; font-size:7.5px; font-weight:700; padding:2px; border-bottom:2px solid var(--app-buton); }
+.tv-card .tc-senha{
+  font-size:26px; font-weight:700; line-height:1.1; color:#1a202c; padding:4px 2px 0;
+  font-family:Arial, Helvetica, sans-serif;
+}
+.tv-card .tc-serv{ font-size:9px; font-weight:700; color:#1a202c; padding-bottom:2px; }
+.tv-card .tc-sessao{
+  background:var(--app-buton); color:#fff; font-size:8.5px; font-weight:700; padding:2px;
+}
+.tv-card-atual .tc-senha{
+  font-size:44px; color:var(--app-forum); text-shadow:2px 2px 4px rgba(0,0,0,.15);
+  animation:entrar .25s ease;
+}
+.tv-card-atual .tc-serv{ font-size:11px; }
+.tv-card-atual .tc-sessao{ font-size:10px; }
+.tv-card-atual .tc-senha.pulso{ animation:pulso .8s ease; }
+@keyframes pulso{ 0%{ transform:scale(.65); } 60%{ transform:scale(1.15); } 100%{ transform:scale(1); } }
+.tv-chamada-grande{ border-right:none; background:radial-gradient(circle at top, #ffffff, #eef1f6); }
+.tv-hist{
+  display:flex; gap:5px; justify-content:center; padding:4px 6px 6px; flex-wrap:wrap;
+  background:#e6ebf4; border-top:2px solid var(--app-paragrafo);
+}
+.tv-hist .h{
+  font-family:'Courier New', monospace; font-size:9px; font-weight:700; color:#5a6a85;
+  background:#fff; border:1px solid #dbe2ee; border-radius:4px; padding:2px 6px;
+}
+
+/* Botões dentro dos monitores → estilo da aplicação (azul gradiente) */
+.monitor .btn{
+  background:var(--app-buton); color:#fff; border:none;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+}
+.monitor .btn:hover{ box-shadow:0 8px 20px rgba(45,48,142,.4); transform:translateY(-2px); }
+.monitor .btn.sec{ background:#6c757d; }
+.monitor .btn:disabled{ background:#a9b3c9; cursor:not-allowed; transform:none; box-shadow:none; }
+
+/* ============================================================
+   DASHBOARD (dark)
+   ============================================================ */
+.kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:12px; }
+.kpi{
+  background:var(--superficie2); border:1px solid var(--borda); border-radius:10px;
+  padding:10px 12px; position:relative; overflow:hidden;
+}
+.kpi::after{
+  content:''; position:absolute; top:-28px; right:-28px; width:64px; height:64px; border-radius:50%;
+  background:radial-gradient(circle, rgba(56,189,248,.12), transparent 70%);
+}
+.kpi .rotulo{ font-size:11px; text-transform:uppercase; letter-spacing:.7px; color:var(--texto2); font-weight:700; }
+.kpi .numero{ font-size:22px; font-weight:800; margin-top:2px; color:var(--primaria); }
+.kpi .numero span{ font-size:12px; font-weight:600; color:var(--texto2); }
+.kpi .delta{ font-size:11px; margin-top:2px; font-weight:600; }
+.kpi .delta.up{ color:var(--terciaria); }
+.kpi .delta.down{ color:var(--erro); }
+
+.grafico-box{ background:var(--superficie2); border:1px solid var(--borda); border-radius:10px; padding:10px; }
+.grafico-toolbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:8px; }
+.grafico-toolbar .titulo-g{ font-size:12.5px; font-weight:700; }
+.grafico-toolbar .grupo-botoes{ margin-left:auto; display:flex; gap:4px; }
+.grafico-toolbar .grupo-botoes .btn{ border-radius:6px; }
+#grafico-svg{ width:100%; height:auto; display:block; }
+.legenda{ display:flex; flex-wrap:wrap; gap:6px 14px; margin-top:8px; font-size:11.5px; color:var(--texto2); font-weight:600; }
+.legenda i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; }
+
+/* ============================================================
+   TERMINAL (dark)
+   ============================================================ */
+.terminal{
+  background:#070b12; border:1px solid var(--borda); border-radius:10px;
+  font-family:ui-monospace, 'Courier New', monospace; font-size:11.5px;
+  line-height:1.65; padding:10px 12px; height:200px; overflow-y:auto;
+}
+.terminal .linha{ white-space:pre-wrap; word-break:break-word; }
+.terminal .l-ok{ color:var(--terciaria); }
+.terminal .l-info{ color:var(--texto2); }
+.terminal .l-ws{ color:var(--primaria); }
+.terminal .l-err{ color:var(--erro); }
+.terminal .l-vo{ color:var(--secundaria); }
+.terminal .cursor{ display:inline-block; width:7px; height:13px; background:var(--primaria); vertical-align:middle;
+  animation:pisca 1s steps(2) infinite; }
+@keyframes pisca{ 50%{ opacity:0; } }
+
+/* ============================================================
+   TIMELINE (dark)
+   ============================================================ */
+.timeline{ display:flex; flex-direction:column; }
+.marco{ display:flex; gap:12px; position:relative; padding-bottom:16px; }
+.marco:last-child{ padding-bottom:0; }
+.marco::before{
+  content:''; position:absolute; left:11px; top:24px; bottom:0; width:2px;
+  background:linear-gradient(180deg, var(--primaria), transparent); opacity:.4;
+}
+.marco:last-child::before{ display:none; }
+.marco .ponto{
+  flex:none; width:24px; height:24px; border-radius:50%; display:grid; place-items:center;
+  font-size:10px; font-weight:800; border:1px solid var(--primaria); color:var(--primaria);
+  background:var(--superficie2); z-index:1; cursor:pointer; transition:all .2s;
+}
+.marco.aberto .ponto, .marco .ponto:hover{ background:var(--primaria); color:#06121f; box-shadow:0 0 14px rgba(56,189,248,.5); }
+.marco .corpo{ flex:1; }
+.marco .corpo h3{ font-size:13px; cursor:pointer; display:inline-block; }
+.marco .corpo h3:hover{ color:var(--primaria); }
+.marco .fase{ font-size:11px; color:var(--texto2); margin-bottom:4px; font-weight:600; }
+.marco .detalhe{
+  display:none; font-size:12.5px; color:var(--texto2); margin-top:6px; padding:8px 10px;
+  background:var(--superficie2); border:1px solid var(--borda); border-radius:8px;
+}
+.marco.aberto .detalhe{ display:block; animation:entrar .25s ease; }
+.marco .tags{ margin-top:6px; display:flex; gap:5px; flex-wrap:wrap; }
+.marco .tags span{
+  font-size:10px; padding:2px 8px; border-radius:999px; border:1px solid var(--borda);
+  color:var(--texto2); font-weight:600;
+}
+
+/* Rodapé */
+.rodape{ text-align:center; font-size:11px; color:var(--texto2); padding:4px 0 2px; font-weight:600; }
+.rodape b{ color:var(--alerta); }
+
+/* ============================================================
+   RESPONSIVIDADE (320px → 1400px)
+   ============================================================ */
+@media (max-width:980px){
+  .monitores{ grid-template-columns:1fr; }
+}
+@media (max-width:520px){
+  .conteudo{ padding:10px; gap:12px; }
+  .secao{ padding:10px; }
+  .kpis{ grid-template-columns:repeat(2,1fr); }
+  .hint{ margin-left:0; }
+  .tv-card-atual .tc-senha{ font-size:32px; }
+  .tv-col{ padding:4px; }
+}
+@media (min-width:1400px){ .conteudo{ max-width:1280px; } }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     CABEÇALHO EXPANSÍVEL (clique na barra → descrição do app)
+     ============================================================ -->
+<header class="cabecalho" id="cabecalho">
+  <div class="cab-bar" id="cab-bar" title="Clique para ver a descrição do projeto">
+    <div class="cab-logo">TJ</div>
+    <div>
+      <h1>Simulador — TriaJus</h1>
+      <div class="sub">Sistema de autoatendimento e gerenciamento de filas · Poder Judiciário</div>
+    </div>
+    <div class="badges">
+      <span class="badge status">Concluído</span>
+      <span class="badge dados">Dados fictícios</span>
+    </div>
+    <span class="hint">Descrição do projeto <span class="chev">▼</span></span>
+  </div>
+  <div class="descricao-wrap">
+    <div class="descricao-inner">
+      <div class="descricao">
+        <p>
+          <b>O que é:</b> o <b>TriaJus</b> é uma plataforma desenvolvida no FabLab CamTuc para modernizar a
+          recepção dos Fóruns do Poder Judiciário: um <b>totem de autoatendimento</b> com triagem guiada por CPF,
+          geração inteligente de senhas (ex.: <b>AUD10</b>, <b>CON001</b>, <b>SS14</b>), comprovante para impressão
+          térmica e um <b>painel de chamadas em tempo real</b> exibido na TV, com alertas sonoros sintetizados.
+        </p>
+        <div class="desc-grid">
+          <div class="desc-card">
+            <h4>Problema que resolve</h4>
+            <ul>
+              <li>Filas de espera desorganizadas no Fórum</li>
+              <li>Sem direcionamento claro para Audiências, Consultas de Processo e Serviço Social</li>
+              <li>Triagem condicional por horário/sessão</li>
+            </ul>
+          </div>
+          <div class="desc-card">
+            <h4>Como funciona</h4>
+            <ul>
+              <li>Cidadão informa o CPF no totem e escolhe o serviço</li>
+              <li>Recebe senha alfanumérica sequencial + comprovante</li>
+              <li>Operador chama a senha (POST /api/chamada)</li>
+              <li>Broadcast WebSocket atualiza a TV instantaneamente</li>
+            </ul>
+          </div>
+          <div class="desc-card">
+            <h4>Stack</h4>
+            <ul>
+              <li>Node.js + Express (API REST :3001)</li>
+              <li>WebSocket nativo (ws :8080)</li>
+              <li>SQLite + Vanilla JS (ES Modules)</li>
+              <li>RBAC no módulo admin + reset sudo</li>
+            </ul>
+          </div>
+          <div class="desc-card">
+            <h4>Como usar o simulador</h4>
+            <ul>
+              <li><b>Modo automático:</b> o Fórum "funciona sozinho" — observe os 3 monitores</li>
+              <li><b>Modo interativo:</b> você é o cidadão no totem (CPF de exemplo já preenchido)</li>
+              <li>Depois, vire o operador: chame as senhas pelo painel e veja a TV reagir</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="conteudo">
+
+  <!-- ============================================================
+       SEÇÃO 1 — MONITORES DA APLICAÇÃO (cenário interativo)
+       ============================================================ -->
+  <section class="secao" aria-label="Monitores da aplicação">
+    <div class="secao-titulo">
+      <div class="icone">🖥️</div>
+      <h2>Monitores da aplicação</h2>
+    </div>
+    <p class="secao-desc">
+      Réplicas fiéis das telas do sistema. O fluxo segue a operação real —
+      <b>totem → fila no painel operacional → chamada do operador → TV</b>. Em
+      <b>modo automático</b> o ciclo roda sozinho e o monitor em operação é destacado;
+      em <b>modo interativo</b> você assume o papel do cidadão no totem e do operador no painel.
+    </p>
+
+    <!-- Controles -->
+    <div class="controles">
+      <button class="btn primario" id="btn-iniciar">▶ Iniciar fluxo</button>
+      <button class="btn perigo small" id="btn-reset" title="Equivale ao endpoint POST /api/wipe">Reset sudo</button>
+      <div class="controle">
+        <label>Som da TV</label>
+        <label class="toggle"><input type="checkbox" id="t-som" checked><span class="slider"></span></label>
+      </div>
+      <div class="controle">
+        <label>Modo de operação</label>
+        <label class="toggle"><input type="checkbox" id="t-manual" title="Ligado: você controla o totem e as chamadas"><span class="slider"></span></label>
+        <span id="modo-rotulo" style="color:var(--primaria); font-weight:700;">Automático</span>
+      </div>
+    </div>
+
+    <div class="monitores">
+      <!-- MONITOR 1: TOTEM DE AUTOSERVIÇO -->
+      <div class="monitor monitor-totem">
+        <div class="monitor-topo">
+          <span class="led"></span>
+          <span>Totem de autosserviço · 1º andar</span>
+          <span class="estado" id="totem-estado">Pronto</span>
+        </div>
+        <div class="monitor-tela">
+          <!-- Tela 01: CPF (réplica do 01-auth.html) -->
+          <div class="tela tela-cpf ativa" id="tela-0">
+            <div class="tela-cab"><span class="mini-logo">⚖</span> PODER JUDICIÁRIO FÓRUM</div>
+            <h1>INSIRA SEU CPF:</h1>
+            <input id="cpf-input" type="text" placeholder="Digite seu CPF aqui...." maxlength="14">
+            <button class="btn" id="cpf-enviar">Enviar</button>
+            <div class="cpf-msg" id="cpf-msg"></div>
+          </div>
+          <!-- Tela 02: Serviços (réplica do 02-service.html) -->
+          <div class="tela tela-servicos" id="tela-1">
+            <button class="btn-voltar" data-voltar="0">‹ VOLTAR PARA O INÍCIO</button>
+            <div class="tela-cab"><span class="mini-logo">⚖</span> PODER JUDICIÁRIO FÓRUM</div>
+            <h1>QUAL SUA OPERAÇÃO:</h1>
+            <button class="btn-servico" data-svc="audiencia">AUDIÊNCIA</button>
+            <button class="btn-servico" data-svc="consulta">CONSULTA</button>
+            <button class="btn-servico" data-svc="servicoSocial">SERVIÇO<br>SOCIAL</button>
+          </div>
+          <!-- Tela 03: Informações requeridas (réplica do 03-infoReq.html) -->
+          <div class="tela tela-info" id="tela-2">
+            <button class="btn-voltar" data-voltar="1">‹ VOLTAR PARA O INÍCIO</button>
+            <div class="tela-cab"><span class="mini-logo">⚖</span> PODER JUDICIÁRIO FÓRUM</div>
+            <h1 id="info-titulo">AUDIÊNCIA:</h1>
+            <div class="grupo-sel">SELECIONE SEU HORÁRIO</div>
+            <div class="horarios" id="info-horarios"></div>
+            <div class="grupo-sel" id="opcoes-titulo">SELECIONE SUA OPÇÃO</div>
+            <div class="opcoes" id="info-opcoes"></div>
+            <button class="btn" id="info-confirmar" disabled>COMFIRMA</button>
+          </div>
+          <!-- Tela 04: Comprovante (réplica do 04-impressao.html) -->
+          <div class="tela" id="tela-3">
+            <div class="tela-cab" style="border:none; padding-bottom:4px;"><span class="mini-logo">⚖</span> PODER JUDICIÁRIO FÓRUM</div>
+            <div class="comprovante">
+              <div class="comp-cab">PODER JUDICIÁRIO<br>FÓRUM</div>
+              <div class="comp-data">
+                <span><strong>DATA</strong> <span id="comp-data">—</span></span>
+                <span><strong>HORA</strong> <span id="comp-hora">—</span></span>
+              </div>
+              <div class="comp-cpf"><strong>CPF:</strong> <span id="comp-cpf">—</span></div>
+              <div class="comp-senha">
+                <div class="num" id="comp-senha">001</div>
+                <div class="serv" id="comp-servico">—</div>
+              </div>
+              <div class="comp-hora" id="comp-sessao" hidden><strong>SEU HORÁRIO:</strong><span id="comp-sessao-valor">—</span></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; margin-top:10px;">
+              <button class="btn sec small" id="comp-cancelar">CANCELAR</button>
+              <button class="btn small" id="comp-confirmar">CONFIRMAR</button>
+            </div>
+          </div>
+          <div class="pontos-tela">
+            <i id="ponto-0" class="ativo"></i><i id="ponto-1"></i><i id="ponto-2"></i><i id="ponto-3"></i>
+          </div>
+          <div class="totem-status" id="totem-status">Pronto para receber cidadãos.</div>
+        </div>
+      </div>
+
+      <!-- Coluna direita: painel operacional + TV -->
+      <div class="col-dir">
+        <!-- MONITOR 2: PAINEL OPERACIONAL -->
+        <div class="monitor monitor-op">
+          <div class="monitor-topo">
+            <span class="led"></span>
+            <span>Painel operacional · chamadas</span>
+            <span class="estado" id="op-estado">—</span>
+          </div>
+          <div class="monitor-tela">
+            <div class="op-cab">FILAS DE ATENDIMENTO</div>
+            <div class="op-filas">
+              <div class="op-fila" data-fila="audiencia">
+                <div class="op-titulo">🎙️ Audiência <span class="cont" id="cont-aud">0</span></div>
+                <div class="op-itens" id="fila-aud"></div>
+                <button class="btn small" data-chamar="audiencia">CHAMAR PRÓXIMA</button>
+              </div>
+              <div class="op-fila" data-fila="consulta">
+                <div class="op-titulo">📄 Consulta de Processo <span class="cont" id="cont-con">0</span></div>
+                <div class="op-itens" id="fila-con"></div>
+                <button class="btn small" data-chamar="consulta">CHAMAR PRÓXIMA</button>
+              </div>
+              <div class="op-fila" data-fila="servicoSocial">
+                <div class="op-titulo">🤝 Serviço Social <span class="cont" id="cont-ss">0</span></div>
+                <div class="op-itens" id="fila-ss"></div>
+                <button class="btn small" data-chamar="servicoSocial">CHAMAR PRÓXIMA</button>
+              </div>
+            </div>
+            <div class="op-aviso" id="op-aviso">Modo automático — as chamadas ocorrem sozinhas.</div>
+          </div>
+        </div>
+
+        <!-- MONITOR 3: TV — PAINEL DE CHAMADAS (réplica do chamador.html) -->
+        <div class="monitor monitor-tv">
+          <div class="monitor-topo">
+            <span class="led"></span>
+            <span>Painel de chamadas · TV do Fórum</span>
+            <span class="estado" id="tv-estado">aguardando…</span>
+          </div>
+          <div class="monitor-tela">
+            <div class="tv-header">
+              <span>SISTEMA DE ATENDIMENTO</span>
+              <span class="img-logo">⚖</span>
+              <span>PODER JUDICIÁRIO FÓRUM</span>
+              <div class="tv-data"><span id="tv-data">—</span><span id="tv-hora">—</span></div>
+            </div>
+            <div class="tv-main">
+              <div class="tv-col">
+                <div class="tv-rotulo">CHAMADAS</div>
+                <div class="tv-card" id="tv-card-1">
+                  <div class="tc-cab">PODER JUDICIÁRIO FÓRUM</div>
+                  <div class="tc-senha">—</div>
+                  <div class="tc-serv">—</div>
+                  <div class="tc-sessao">SESSÃO: —</div>
+                </div>
+                <div class="tv-card" id="tv-card-2">
+                  <div class="tc-cab">PODER JUDICIÁRIO FÓRUM</div>
+                  <div class="tc-senha">—</div>
+                  <div class="tc-serv">—</div>
+                  <div class="tc-sessao">SESSÃO: —</div>
+                </div>
+              </div>
+              <div class="tv-col tv-chamada-grande">
+                <div class="tv-rotulo">CHAMADA-ATUAL</div>
+                <div class="tv-card tv-card-atual">
+                  <div class="tc-cab">PODER JUDICIÁRIO FÓRUM</div>
+                  <div class="tc-senha" id="tv-senha">—</div>
+                  <div class="tc-serv" id="tv-servico">Aguardando chamadas…</div>
+                  <div class="tc-sessao" id="tv-sessao">SESSÃO: — · GUICHÊ: —</div>
+                </div>
+              </div>
+            </div>
+            <div class="tv-hist" id="tv-hist"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SEÇÃO 2 — DASHBOARD (KPIs + gráficos)
+       ============================================================ -->
+  <section class="secao" aria-label="Dashboard do Fórum">
+    <div class="secao-titulo">
+      <div class="icone">📊</div>
+      <h2>Dashboard do Fórum</h2>
+    </div>
+    <p class="secao-desc">Métricas fictícias de um dia de atendimento. Alterne o tipo de visualização ou gere novos dados.</p>
+    <div class="kpis" id="kpis"></div>
+    <div class="grafico-box">
+      <div class="grafico-toolbar">
+        <span class="titulo-g" id="titulo-grafico">Atendimentos por serviço (7 dias)</span>
+        <div class="grupo-botoes" role="group" aria-label="Tipo de gráfico">
+          <button class="btn small ativo" data-tipo="barra">Barras</button>
+          <button class="btn small" data-tipo="linha">Linha</button>
+          <button class="btn small" data-tipo="pizza">Pizza</button>
+          <button class="btn small sucesso" id="btn-gerar">Gerar novos dados</button>
+        </div>
+      </div>
+      <svg id="grafico-svg" viewBox="0 0 640 260" role="img" aria-label="Gráfico fictício de atendimentos"></svg>
+      <div class="legenda" id="grafico-legenda"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SEÇÃO 3 — TERMINAL (console simulado do backend)
+       ============================================================ -->
+  <section class="secao" aria-label="Console simulado do backend">
+    <div class="secao-titulo">
+      <div class="icone">⌨️</div>
+      <h2>Console do servidor</h2>
+    </div>
+    <p class="secao-desc">Log simulado do backend Node.js + Express (API :3001) e WebSocket (broadcast :8080).</p>
+    <div class="terminal" id="terminal" aria-live="polite"></div>
+  </section>
+
+  <!-- ============================================================
+       SEÇÃO 4 — TIMELINE (marcos do projeto)
+       ============================================================ -->
+  <section class="secao" aria-label="Linha do tempo do projeto">
+    <div class="secao-titulo">
+      <div class="icone">🗺️</div>
+      <h2>Linha do tempo do projeto</h2>
+    </div>
+    <p class="secao-desc">Clique em um marco para ver os detalhes de cada fase.</p>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <div class="rodape"><b>Demonstração interativa</b> — todos os CPFs, senhas e métricas são fictícios (ex.: CPF 123.456.789-00, senha CON001).</div>
+</div>
+
+<script>
+/* ============================================================
+   TriaJus — Mockup interativo
+   Página no tema do site; monitores no estilo da aplicação.
+   Dados exibidos são FICTÍCIOS (rotulados como exemplo).
+   ============================================================ */
+
+/* ---------- Utilitários ---------- */
+const $ = (id) => document.getElementById(id);
+const rnd = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const aguardar = (ms) => new Promise(r => setTimeout(r, ms));
+
+/* CPF fictício pré-preenchido no modo interativo */
+const CPF_EXEMPLO = '123.456.789-00';
+
+/* ============================================================
+   1) CABEÇALHO EXPANSÍVEL — clique na barra
+   ============================================================ */
+$('cab-bar').addEventListener('click', () => $('cabecalho').classList.toggle('aberto'));
+
+/* ============================================================
+   1.1) VOZ DA TV — feminina, natural e sem travamentos
+   ============================================================ */
+const FEMININAS = ['maria', 'helena', 'luciana', 'luciene', 'francisca', 'raquel', 'yara', 'vitoria', 'vitória', 'alice', 'sara', 'female', 'feminina'];
+const VOZES_NATURAIS = ['google', 'natural', 'neural', 'online'];
+const VOZES_ROBOTICAS = ['espeak', 'e-speak', 'test', 'dstt', 'sam '];
+
+function vozChamada() {
+  const sint = window.speechSynthesis;
+  if (!sint) return null;
+  const vozes = sint.getVoices() || [];
+  const lang = (v) => (v.lang || '').toLowerCase().replace('_', '-');
+  const nome = (v) => v.name.toLowerCase();
+  const ruim = (v) => VOZES_ROBOTICAS.some(r => nome(v).includes(r));
+  const feminina = (lista) => lista.find(v => FEMININAS.some(f => nome(v).includes(f)));
+
+  const naturais = vozes.filter(v => !ruim(v) && VOZES_NATURAIS.some(n => nome(v).includes(n)));
+  const br = vozes.filter(v => !ruim(v) && lang(v).startsWith('pt-br'));
+  const pt = vozes.filter(v => !ruim(v) && lang(v).startsWith('pt'));
+
+  return (
+    feminina(naturais) ||                        // natural + feminina (ideal)
+    naturais.find(v => lang(v).startsWith('pt')) // qualquer natural em pt
+    || feminina(br) ||                           // qualquer feminina pt-BR
+    feminina(pt) ||
+    br[0] || pt[0] ||
+    vozes.find(v => v.default) ||
+    vozes[0] || null
+  );
+}
+
+/* Fala o anúncio da TV com a melhor voz disponível:
+   1) Web Speech API se houver voz natural (Chrome/Edge/Safari);
+   2) fallback p/ Google Translate TTS (MP3) no Firefox/Linux,
+      que só expõe vozes espeak (robóticas) — assim soa como no Chrome. */
+let audioFallback = null;
+
+function vozRobótica(v) {
+  if (!v) return true;
+  return VOZES_ROBOTICAS.some(r => v.name.toLowerCase().includes(r));
+}
+
+function falar(texto) {
+  const sint = window.speechSynthesis;
+  const v = sint ? vozChamada() : null;
+
+  // Caminho 1 — voz natural do navegador (Google/Natural/Neural pt)
+  if (sint && v && !vozRobótica(v)) {
+    try { if (audioFallback) { audioFallback.pause(); audioFallback = null; } } catch (e) {}
+    try { sint.cancel(); } catch (e) {}
+    try { sint.pause(); sint.resume(); } catch (e) {}
+
+    const u = new SpeechSynthesisUtterance(texto);
+    u.lang = 'pt-BR';
+    u.rate = 0.9;   // ritmo natural, porém claro
+    u.pitch = 1.08; // leve tom feminino
+    u.volume = 1;
+    u.voice = v;
+    u.onend = () => { try { sint.resume(); } catch (e) {} };
+    try { sint.speak(u); } catch (e) { falarGoogle(texto); }
+    return;
+  }
+
+  // Caminho 2 — fallback Google Translate TTS (funciona no Firefox)
+  falarGoogle(texto);
+}
+
+function falarGoogle(texto) {
+  try {
+    if (audioFallback) { audioFallback.pause(); audioFallback = null; }
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=pt-BR&q=' + encodeURIComponent(texto);
+    audioFallback = new Audio(url);
+    audioFallback.volume = 1;
+    audioFallback.play();
+  } catch (e) { /* sem áudio disponível — segue em silêncio */ }
+}
+
+if (window.speechSynthesis) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener('voiceschanged', () => window.speechSynthesis.getVoices());
+  // Mantém a síntese "acordada" (bug do Chrome que a pausa sozinha)
+  setInterval(() => { try { window.speechSynthesis.resume(); } catch (e) {} }, 10000);
+}
+
+/* ============================================================
+   2) SIMULADOR — monitores (totem, painel operacional, TV)
+   Espelha o comportamento real do TriaJus:
+   - senhas: AUD+horário / CON+sequencial / SS+horário
+   - triagem condicional por sessões (capacidade por sessão)
+   - chamada → broadcast WS → TV + voz sintetizada
+   ============================================================ */
+const SIM = {
+  rodando: false,
+  timer: null,
+  manual: false,       // modo interativo (usuário dirige o totem)
+  som: true,
+  minuto: 8 * 60,      // relógio simulado (abre 08:00)
+  seqCon: 0,           // sequencial de consultas (CON001…)
+  filas: { audiencia: [], consulta: [], servicoSocial: [] },
+  sessoes: { audiencia: {}, servicoSocial: {} },
+  chamadasRealizadas: 0,
+  tempos: [],
+  historicoTv: [],
+  guicheAtual: 0,      // alterna guichês 1..2
+  ocupado: false
+};
+
+const SESSOES = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+const NOME_SERVICO = { audiencia: 'AUDIÊNCIA', consulta: 'CONSULTA', servicoSocial: 'SERVIÇO SOCIAL' };
+const NOME_SERVICO_LEG = { audiencia: 'Audiência', consulta: 'Consulta de Processo', servicoSocial: 'Serviço Social' };
+const CPFS_FICTICIOS = ['123.456.789-00', '987.654.321-00', '456.789.123-00', '321.654.987-00', '789.123.456-00', '654.987.321-00'];
+const NOMES_FICTICIOS = ['M. A. Santos', 'J. R. Oliveira', 'C. F. Lima', 'P. S. Souza', 'L. T. Costa', 'R. M. Alves'];
+
+const TOTEM_MON = () => document.querySelector('.monitor-totem');
+const TV_MON = () => document.querySelector('.monitor-tv');
+
+function horaAtual() {
+  const h = Math.floor(SIM.minuto / 60), m = SIM.minuto % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+}
+function dataAtual() {
+  return new Date().toLocaleDateString('pt-BR');
+}
+
+/* --- Navegação das telas do totem --- */
+let cpfAtual = '', servicoAtual = '', sessaoAtual = '', opcaoAtual = '';
+let sessaoReservada = '', senhaGerada = '';
+
+function mostrarTela(n) {
+  [0, 1, 2, 3].forEach(i => {
+    $('tela-' + i).classList.toggle('ativa', i === n);
+    $('ponto-' + i).classList.toggle('ativo', i === n);
+  });
+}
+
+function statusTotem(msg, estado = 'Pronto') {
+  $('totem-status').textContent = msg;
+  $('totem-estado').textContent = estado;
+}
+
+/* --- Geração de senha (espelha config/services/ticketGen.js) --- */
+function gerarSenha(servico) {
+  if (servico === 'consulta') {
+    SIM.seqCon++;
+    return 'CON' + String(SIM.seqCon).padStart(3, '0');
+  }
+  const livre = SESSOES.find(s => !SIM.sessoes[servico][s]);
+  if (!livre) return null; // sessões esgotadas
+  SIM.sessoes[servico][livre] = true;
+  return (servico === 'audiencia' ? 'AUD' : 'SS') + livre.slice(0, 2);
+}
+
+function sessaoDaSenha(senha) {
+  return senha.startsWith('CON') ? '—' : senha.slice(3) + ':00';
+}
+
+/* --- Comprovante (tela 04) --- */
+function montarComprovante(senha, servico, cpf) {
+  $('comp-data').textContent = dataAtual();
+  $('comp-hora').textContent = horaAtual();
+  $('comp-cpf').textContent = cpf;
+  $('comp-senha').textContent = senha;
+  $('comp-servico').textContent = NOME_SERVICO[servico];
+  const temSessao = servico !== 'consulta';
+  $('comp-sessao').hidden = !temSessao;
+  $('comp-sessao-valor').textContent = sessaoDaSenha(senha);
+}
+
+/* --- Adicionar ticket à fila + logs (equivale ao POST /api/<servico>) --- */
+function registrarTicket(servico, senha, cpf, nome) {
+  const ticket = { senha, servico, cpf, nome, chegado: SIM.minuto };
+  SIM.filas[servico].push(ticket);
+  logTerminal(`POST /api/${servico === 'servicoSocial' ? 'servicosocial' : servico} 200 · ticket=${senha} · CPF=${cpf}`, 'l-ok');
+  logTerminal(`WS broadcast → tabela '${servico}' { type: 'NEW_RECORD', data: { ticket: '${senha}' } }`, 'l-ws');
+  renderFilas();
+}
+
+/* --- Cidadão automático: percorre as telas do totem sozinho ---
+   1 segundo para cada interação (tela), com o monitor destacado */
+async function cidadaoAutomatico(cpf, nome) {
+  TOTEM_MON().classList.add('em-destaque');
+
+  mostrarTela(0);
+  statusTotem('Validando CPF…', 'CPF');
+  $('cpf-input').value = cpf;
+  await aguardar(1000);
+
+  mostrarTela(1);
+  statusTotem('Selecionando serviço…', 'Serviço');
+  await aguardar(1000);
+
+  const svc = ['audiencia', 'consulta', 'servicoSocial'][rnd(0, 2)];
+  const senha = gerarSenha(svc);
+  if (!senha) {
+    statusTotem('Sessões esgotadas — cidadão encaminhado à recepção.', 'Recepção');
+    logTerminal(`[totem] ${nome} — ${NOME_SERVICO_LEG[svc]}: sessões do dia esgotadas → recepção`, 'l-err');
+    await aguardar(1000);
+    mostrarTela(0);
+    TOTEM_MON().classList.remove('em-destaque');
+    return;
+  }
+
+  if (svc !== 'consulta') {
+    // renderiza a tela de sessão com a sessão do cidadão já destacada
+    montarTelaInfo(svc, sessaoDaSenha(senha));
+    mostrarTela(2);
+    statusTotem('Definindo sessão ' + sessaoDaSenha(senha) + '…', 'Sessão');
+    await aguardar(1000);
+  }
+
+  montarComprovante(senha, svc, cpf);
+  mostrarTela(3);
+  statusTotem('Imprimindo comprovante…', 'Impressão');
+  await aguardar(1000);
+
+  registrarTicket(svc, senha, cpf, nome);
+  mostrarTela(0);
+  $('cpf-input').value = '';
+  statusTotem(`Senha ${senha} emitida — ${NOME_SERVICO_LEG[svc]}.`);
+  TOTEM_MON().classList.remove('em-destaque');
+}
+
+/* --- Chamada de senha (equivale ao POST /api/chamada + broadcast WS) --- */
+function chamarSenha(servico) {
+  const fila = SIM.filas[servico];
+  if (!fila.length) return false;
+  const ticket = fila.shift();
+  SIM.guicheAtual = (SIM.guicheAtual % 2) + 1;
+  const guiche = SIM.guicheAtual;
+
+  const espera = Math.max(1, Math.round((SIM.minuto - ticket.chegado) / 2));
+  SIM.tempos.push(espera);
+  SIM.chamadasRealizadas++;
+  SIM.historicoTv.unshift({ senha: ticket.senha, guiche, servico: ticket.servico });
+  SIM.historicoTv = SIM.historicoTv.slice(0, 5);
+
+  // destaque do monitor da TV durante a chamada
+  TV_MON().classList.add('em-destaque');
+  setTimeout(() => TV_MON().classList.remove('em-destaque'), 1500);
+
+  // TV: cards de CHAMADAS (-1 e -2) + CHAMADA-ATUAL
+  const hist = SIM.historicoTv;
+  for (let i = 0; i < 2; i++) {
+    const h = hist[i + 1];
+    const card = $('tv-card-' + (i + 1));
+    card.querySelector('.tc-senha').textContent = h ? h.senha : '—';
+    card.querySelector('.tc-serv').textContent = h ? NOME_SERVICO_LEG[h.servico] : '—';
+    card.querySelector('.tc-sessao').textContent = 'SESSÃO: ' + (h ? sessaoDaSenha(h.senha) : '—');
+  }
+  const tvSenha = $('tv-senha');
+  tvSenha.textContent = ticket.senha;
+  tvSenha.classList.remove('pulso'); void tvSenha.offsetWidth; tvSenha.classList.add('pulso');
+  $('tv-servico').textContent = NOME_SERVICO_LEG[ticket.servico];
+  $('tv-sessao').textContent = 'SESSÃO: ' + sessaoDaSenha(ticket.senha) + ' · GUICHÊ: ' + guiche;
+  $('tv-hist').innerHTML = hist.map(h => `<span class="h">${h.senha} · G${h.guiche}</span>`).join('');
+  $('tv-estado').textContent = 'chamada ' + ticket.senha;
+  $('op-estado').textContent = 'última: ' + ticket.senha;
+
+  logTerminal(`POST /api/chamada 200 · ticket=${ticket.senha} · servico=${ticket.servico} · horario=${sessaoDaSenha(ticket.senha)}`, 'l-ok');
+  logTerminal(`WS broadcast → tabela 'chamada' → painel da TV atualizado`, 'l-ws');
+
+  if (SIM.som) {
+    $('tv-estado').textContent = 'anunciando ' + ticket.senha;
+    falar(`Senha ${ticket.senha}, comparecer ao guichê ${guiche}.`);
+    logTerminal(`Voz sintetizada: "Senha ${ticket.senha}, comparecer ao guichê ${guiche}."`, 'l-vo');
+  }
+  renderFilas();
+  return true;
+}
+
+/* Chamada automática FEITA PELO OPERADOR (painel operacional):
+   destaca o painel, "pressiona" o botão CHAMAR do serviço e então
+   registra a chamada (POST /api/chamada) → TV reage. */
+async function chamadaOperador() {
+  const OP_MON = document.querySelector('.monitor-op');
+  // fila maior primeiro (mesma regra de prioridade do operador real)
+  const ordem = ['audiencia', 'consulta', 'servicoSocial'].sort(
+    (a, b) => SIM.filas[b].length - SIM.filas[a].length
+  );
+  const svc = ordem.find(s => SIM.filas[s].length > 0);
+  if (!svc) return;
+
+  OP_MON.classList.add('em-destaque');
+  $('op-estado').textContent = 'chamando ' + SIM.filas[svc][0].senha + '…';
+  const btn = document.querySelector(`[data-chamar="${svc}"]`);
+  btn.classList.add('pressionado');
+  logTerminal(`[operador] chamando a próxima senha da fila de ${NOME_SERVICO_LEG[svc]}…`, 'l-info');
+  await aguardar(900);
+
+  chamarSenha(svc);
+  btn.classList.remove('pressionado');
+  OP_MON.classList.remove('em-destaque');
+}
+
+/* --- Tick do relógio (ciclo real: totem → fila → operador → TV) --- */
+async function tickSim() {
+  if (SIM.ocupado) return;
+  SIM.ocupado = true;
+  SIM.minuto += 3;
+  if (SIM.minuto > 18 * 60) {
+    // novo dia no Fórum: sessões e sequenciais são reiniciados (como no SQLite real)
+    SIM.minuto = 8 * 60;
+    SIM.sessoes = { audiencia: {}, servicoSocial: {} };
+    SIM.seqCon = 0;
+    logTerminal('Novo dia no Fórum — sessões e sequenciais reiniciados (tabelas limpas).', 'l-info');
+  }
+  $('tv-hora').textContent = horaAtual();
+  if (SIM.minuto % 30 === 0) $('tv-data').textContent = dataAtual();
+
+  if (!SIM.manual) {
+    // 1) cidadão no totem (1s por tela)
+    const idx = rnd(0, CPFS_FICTICIOS.length - 1);
+    await cidadaoAutomatico(CPFS_FICTICIOS[idx], NOMES_FICTICIOS[idx]);
+    // 2) o ticket fica visível aguardando no painel operacional
+    await aguardar(800);
+    // 3) o operador chama pelo painel → TV atualiza
+    await chamadaOperador();
+  }
+  SIM.ocupado = false;
+}
+
+function iniciarLoop() {
+  if (SIM.timer) clearInterval(SIM.timer);
+  SIM.timer = setInterval(tickSim, 6500);
+}
+
+/* --- Renderização das filas (painel operacional) --- */
+function renderFilas() {
+  const conf = { audiencia: ['fila-aud', 'cont-aud'], consulta: ['fila-con', 'cont-con'], servicoSocial: ['fila-ss', 'cont-ss'] };
+  for (const [svc, [idFila, idCont]] of Object.entries(conf)) {
+    const chips = SIM.filas[svc].slice(0, 9).map(t => `<span class="op-chip">${t.senha}</span>`).join('');
+    $(idFila).innerHTML = chips;
+    $(idCont).textContent = SIM.filas[svc].length;
+  }
+}
+
+/* --- Modo manual (interativo): montagem da tela 03 --- */
+const OPCOES_AUDIENCIA = ['REQUERENTE', 'REQUERIDO', 'TESTEMUNHA'];
+
+function montarTelaInfo(svc, sessaoSel = '') {
+  $('info-titulo').textContent = NOME_SERVICO[svc] + ':';
+  // horários: só sessões livres (triagem condicional por horário);
+  // sessaoSel destaca a sessão escolhida pelo cidadão (modo automático)
+  $('info-horarios').innerHTML = SESSOES.map(s => {
+    const livre = !SIM.sessoes[svc][s];
+    const sel = s === sessaoSel ? ' sel' : '';
+    return `<button class="btn-hora${sel}" data-hora="${s}" ${livre ? '' : 'disabled'}>${s}</button>`;
+  }).join('');
+  // opções: só para audiência (réplica do 03-infoReq.html);
+  // no modo automático a 1ª opção já vem marcada (escolha do cidadão)
+  const temOpcoes = svc === 'audiencia';
+  $('opcoes-titulo').style.display = temOpcoes ? '' : 'none';
+  $('info-opcoes').innerHTML = temOpcoes
+    ? OPCOES_AUDIENCIA.map((o, i) => {
+        const autoSel = sessaoSel && i === 0 ? ' sel' : '';
+        const checked = sessaoSel && i === 0 ? ' checked' : '';
+        return `<label class="opcao-linha${autoSel}"><span>${o}</span><input type="checkbox" data-opcao="${o}"${checked}></label>`;
+      }).join('')
+    : '';
+  sessaoAtual = sessaoSel || '';
+  opcaoAtual = sessaoSel ? 'AUTOMÁTICO' : '';
+  atualizarConfirmar();
+}
+
+function atualizarConfirmar() {
+  const precisaOpcao = servicoAtual === 'audiencia';
+  $('info-confirmar').disabled = !sessaoAtual || (precisaOpcao && !opcaoAtual);
+}
+
+/* --- Controles --- */
+function initControles() {
+  $('btn-iniciar').addEventListener('click', () => {
+    if (SIM.rodando) {
+      SIM.rodando = false;
+      clearInterval(SIM.timer);
+      $('btn-iniciar').textContent = '▶ Iniciar fluxo';
+      logTerminal('Fluxo pausado pelo operador.', 'l-info');
+    } else {
+      SIM.rodando = true;
+      $('btn-iniciar').textContent = '⏸ Pausar fluxo';
+      logTerminal('Servidor iniciado → Express :3001 · WebSocket :8080', 'l-info');
+      logTerminal('Aguardando conexões (totem, painel operacional, TV)…', 'l-info');
+      iniciarLoop();
+    }
+  });
+
+  $('btn-reset').addEventListener('click', () => {
+    if (!confirm('Reset sudo: apagar todas as filas, chamadas e logs (equivalente a POST /api/wipe)?')) return;
+    SIM.filas = { audiencia: [], consulta: [], servicoSocial: [] };
+    SIM.sessoes = { audiencia: {}, servicoSocial: {} };
+    SIM.seqCon = 0; SIM.chamadasRealizadas = 0; SIM.tempos = [];
+    SIM.historicoTv = []; SIM.minuto = 8 * 60;
+    cpfAtual = ''; servicoAtual = ''; sessaoAtual = ''; opcaoAtual = '';
+    sessaoReservada = ''; senhaGerada = '';
+    $('cpf-input').value = SIM.manual ? CPF_EXEMPLO : '';
+    $('cpf-msg').textContent = '';
+    $('cpf-msg').className = 'cpf-msg';
+    mostrarTela(0);
+    statusTotem('Sistema reiniciado.');
+    $('tv-senha').textContent = '—';
+    $('tv-servico').textContent = 'Aguardando chamadas…';
+    $('tv-sessao').textContent = 'SESSÃO: — · GUICHÊ: —';
+    $('tv-hist').innerHTML = '';
+    $('tv-estado').textContent = 'aguardando…';
+    for (let i = 0; i < 2; i++) {
+      const c = $('tv-card-' + (i + 1));
+      c.querySelector('.tc-senha').textContent = '—';
+      c.querySelector('.tc-serv').textContent = '—';
+      c.querySelector('.tc-sessao').textContent = 'SESSÃO: —';
+    }
+    $('terminal').innerHTML = '';
+    renderFilas();
+    logTerminal('Sudo verificado ✓ → DELETE audiencia · consulta · servicoSocial · chamada', 'l-err');
+    logTerminal('Banco de dados zerado com sucesso. (dados fictícios de demonstração)', 'l-ok');
+  });
+
+  $('t-som').addEventListener('change', e => {
+    SIM.som = e.target.checked;
+    $('tv-estado').textContent = SIM.som ? 'som ativo' : 'som desativado';
+  });
+
+  // Modo automático ↔ interativo
+  $('t-manual').addEventListener('change', e => {
+    SIM.manual = e.target.checked;
+    $('modo-rotulo').textContent = SIM.manual ? 'Interativo' : 'Automático';
+    document.querySelector('.monitor-totem').classList.toggle('auto', !SIM.manual);
+    $('op-aviso').textContent = SIM.manual
+      ? 'Modo interativo — chame as senhas pelos botões abaixo.'
+      : 'Modo automático — as chamadas ocorrem sozinhas.';
+    document.querySelectorAll('[data-chamar]').forEach(b => {
+      b.disabled = !SIM.manual;
+      b.classList.toggle('sec', !SIM.manual);
+    });
+    if (SIM.manual) {
+      // CPF fictício já preenchido para o usuário não precisar procurar um
+      $('cpf-input').value = CPF_EXEMPLO;
+      $('cpf-msg').className = 'cpf-msg ok';
+      $('cpf-msg').textContent = 'CPF de exemplo preenchido — clique em Enviar.';
+      mostrarTela(0);
+      statusTotem('Modo interativo: você é o cidadão. CPF de exemplo já preenchido.', 'Aguardando');
+      logTerminal('Modo interativo ativado — controle o totem e as chamadas.', 'l-info');
+    } else {
+      $('cpf-input').value = '';
+      $('cpf-msg').textContent = '';
+      statusTotem('Modo automático retomado.');
+      logTerminal('Modo automático ativado.', 'l-info');
+    }
+  });
+}
+
+/* --- Fluxo interativo do totem (o usuário é o cidadão) --- */
+function initTotemInterativo() {
+  $('cpf-enviar').addEventListener('click', () => {
+    const digitos = $('cpf-input').value.replace(/\D/g, '');
+    if (digitos.length !== 11) {
+      $('cpf-msg').className = 'cpf-msg';
+      $('cpf-msg').textContent = 'CPF inválido — digite 11 dígitos.';
+      statusTotem('CPF inválido.', 'Erro');
+      return;
+    }
+    cpfAtual = $('cpf-input').value;
+    $('cpf-msg').className = 'cpf-msg ok';
+    $('cpf-msg').textContent = 'CPF válido ✓';
+    logTerminal(`[totem] CPF ${cpfAtual} validado (cpfVerify.js)`, 'l-info');
+    setTimeout(() => { mostrarTela(1); statusTotem('Selecione a operação.', 'Serviço'); }, 450);
+  });
+
+  document.querySelectorAll('.btn-servico').forEach(b => {
+    b.addEventListener('click', () => {
+      servicoAtual = b.dataset.svc;
+      const senha = gerarSenha(servicoAtual);
+      if (!senha) {
+        statusTotem('Sessões esgotadas para este serviço — procure a recepção.', 'Recepção');
+        logTerminal(`[totem] ${NOME_SERVICO_LEG[servicoAtual]}: sessões do dia esgotadas → recepção`, 'l-err');
+        setTimeout(() => { mostrarTela(0); statusTotem('Pronto para receber cidadãos.'); }, 1600);
+        return;
+      }
+      // reserva a sessão e guarda a senha gerada para o comprovante
+      sessaoReservada = sessaoDaSenha(senha);
+      senhaGerada = senha;
+      if (servicoAtual === 'consulta') {
+        mostrarComprovanteManual();
+      } else {
+        montarTelaInfo(servicoAtual);
+        mostrarTela(2);
+        statusTotem('Selecione o horário e a opção.', 'Sessão');
+      }
+    });
+  });
+
+  $('info-horarios').addEventListener('click', e => {
+    const b = e.target.closest('.btn-hora');
+    if (!b || b.disabled) return;
+    sessaoAtual = b.dataset.hora;
+    document.querySelectorAll('.btn-hora').forEach(x => x.classList.toggle('sel', x === b));
+    atualizarConfirmar();
+  });
+
+  $('info-opcoes').addEventListener('click', e => {
+    const l = e.target.closest('.opcao-linha');
+    if (!l) return;
+    const cb = l.querySelector('input');
+    document.querySelectorAll('.opcao-linha').forEach(x => {
+      x.classList.remove('sel'); x.querySelector('input').checked = false;
+    });
+    l.classList.add('sel'); cb.checked = true;
+    opcaoAtual = cb.dataset.opcao;
+    atualizarConfirmar();
+  });
+
+  $('info-confirmar').addEventListener('click', () => {
+    if (!sessaoAtual) return;
+    montarComprovante(senhaGerada, servicoAtual, cpfAtual);
+    mostrarTela(3);
+    statusTotem('Revise o comprovante.', 'Impressão');
+  });
+
+  // VOLTAR (réplica do link "VOLTAR PARA O INÍCIO")
+  document.querySelectorAll('[data-voltar]').forEach(b => {
+    b.addEventListener('click', () => {
+      const destino = +b.dataset.voltar;
+      if (destino === 1 && sessaoReservada && sessaoReservada !== '—') {
+        // devolve a sessão reservada ainda não confirmada
+        delete SIM.sessoes[servicoAtual][sessaoReservada];
+        sessaoReservada = '';
+      }
+      mostrarTela(destino);
+      statusTotem(destino === 0 ? 'Pronto para receber cidadãos.' : 'Selecione a operação.', 'Voltou');
+    });
+  });
+
+  $('comp-confirmar').addEventListener('click', () => {
+    registrarTicket(servicoAtual, senhaGerada, cpfAtual, 'Você (modo interativo)');
+    statusTotem('Comprovante impresso — ticket na fila. Atenda pelo painel operacional!');
+    setTimeout(() => {
+      mostrarTela(0);
+      // mantém o CPF de exemplo preenchido para a próxima emissão
+      $('cpf-input').value = CPF_EXEMPLO;
+      $('cpf-msg').className = 'cpf-msg ok';
+      $('cpf-msg').textContent = 'CPF de exemplo preenchido — clique em Enviar.';
+      statusTotem('Pronto para o próximo cidadão.');
+    }, 1400);
+  });
+
+  $('comp-cancelar').addEventListener('click', () => {
+    // devolve a sessão reservada
+    if (sessaoReservada !== '—') delete SIM.sessoes[servicoAtual][sessaoReservada];
+    mostrarTela(1);
+    statusTotem('Operação cancelada.');
+  });
+}
+
+function mostrarComprovanteManual() {
+  montarComprovante(senhaGerada, servicoAtual, cpfAtual);
+  mostrarTela(3);
+  statusTotem('Revise o comprovante.', 'Impressão');
+}
+
+/* --- Painel operacional: chamadas manuais --- */
+function initPainelOperacional() {
+  document.querySelectorAll('[data-chamar]').forEach(b => {
+    b.addEventListener('click', () => {
+      const svc = b.dataset.chamar;
+      if (!chamarSenha(svc)) {
+        logTerminal(`[operador] Fila de ${NOME_SERVICO_LEG[svc]} vazia — nada a chamar.`, 'l-err');
+      }
+    });
+  });
+}
+
+/* ============================================================
+   3) DASHBOARD — KPIs e gráficos (SVG manual, sem Chart.js)
+   ============================================================ */
+const SERVICOS = ['Audiência', 'Consulta', 'Serviço Social'];
+const CORES = { 'Audiência': '#38bdf8', 'Consulta': '#a78bfa', 'Serviço Social': '#34d399' };
+
+let dadosDashboard = { series: null, tempoMedio: null, dist: null, kpis: null };
+
+function gerarDadosDashboard() {
+  dadosDashboard.series = Array.from({ length: 7 }, (_, d) => ({
+    dia: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'][d],
+    valores: SERVICOS.map(() => rnd(4, 30))
+  }));
+  dadosDashboard.tempoMedio = Array.from({ length: 11 }, (_, i) => ({
+    hora: String(i + 8).padStart(2, '0') + 'h',
+    min: rnd(4, 25)
+  }));
+  dadosDashboard.dist = SERVICOS.map((s, i) => ({ nome: s, valor: rnd(30, 90) + i * 12 }));
+  const total = dadosDashboard.dist.reduce((a, b) => a + b.valor, 0);
+  dadosDashboard.kpis = { atendidos: total, aguardando: rnd(8, 25), tempoMedio: rnd(6, 18), sla: rnd(78, 97) };
+}
+
+function renderKpis() {
+  const k = dadosDashboard.kpis;
+  const itens = [
+    { rot: 'Atendimentos hoje', num: k.atendidos, suf: '', delta: '+12% vs ontem', cls: 'up' },
+    { rot: 'Aguardando', num: k.aguardando, suf: '', delta: 'pico às 10h', cls: 'down' },
+    { rot: 'Tempo médio (min)', num: k.tempoMedio, suf: ' min', delta: '-4 min vs média', cls: 'up' },
+    { rot: 'SLA ≤ 20 min', num: k.sla, suf: '%', delta: 'meta 90%', cls: 'up' }
+  ];
+  $('kpis').innerHTML = itens.map(i => `
+    <div class="kpi">
+      <div class="rotulo">${i.rot}</div>
+      <div class="numero">${i.num}<span>${i.suf}</span></div>
+      <div class="delta ${i.cls}">${i.delta}</div>
+    </div>`).join('');
+}
+
+function desenharGrafico(tipo) {
+  const svg = $('grafico-svg');
+  const W = 640, H = 260, padL = 38, padB = 34, padT = 14, padR = 12;
+  const titulos = { barra: 'Atendimentos por serviço (7 dias)', linha: 'Tempo médio de espera por hora', pizza: 'Distribuição de serviços (dia atual)' };
+  $('titulo-grafico').textContent = titulos[tipo];
+  svg.innerHTML = '';
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const criar = (tag, attrs) => {
+    const el = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    return el;
+  };
+
+  if (tipo === 'barra') {
+    const dias = dadosDashboard.series;
+    const max = Math.max(...dias.flatMap(d => d.valores)) + 4;
+    const grupoW = (W - padL - padR) / dias.length;
+    const barraW = Math.min(16, (grupoW - 12) / 3);
+    dias.forEach((d, di) => {
+      d.valores.forEach((v, si) => {
+        const x = padL + di * grupoW + 6 + si * barraW;
+        const h = (v / max) * (H - padT - padB);
+        svg.appendChild(criar('rect', { x, y: H - padB - h, width: barraW, height: Math.max(h, 2), rx: 3, fill: CORES[SERVICOS[si]], opacity: .9 }));
+        const txt = criar('text', { x: x + barraW / 2, y: H - padB - h - 5, 'text-anchor': 'middle', 'font-size': 9, fill: '#8b9bb8' });
+        txt.textContent = v; svg.appendChild(txt);
+      });
+      const lbl = criar('text', { x: padL + di * grupoW + grupoW / 2, y: H - 14, 'text-anchor': 'middle', 'font-size': 10, fill: '#8b9bb8' });
+      lbl.textContent = d.dia; svg.appendChild(lbl);
+    });
+  } else if (tipo === 'linha') {
+    const pts = dadosDashboard.tempoMedio;
+    const max = Math.max(...pts.map(p => p.min)) + 5;
+    const iw = (W - padL - padR) / (pts.length - 1);
+    const px = (i) => padL + i * iw;
+    const py = (v) => H - padB - (v / max) * (H - padT - padB);
+    let d = `M ${px(0)} ${py(pts[0].min)}`;
+    pts.slice(1).forEach((p, i) => { d += ` L ${px(i + 1)} ${py(p.min)}`; });
+    const grad = criar('defs', {});
+    const g = criar('linearGradient', { id: 'gradLinha', x1: 0, y1: 0, x2: 0, y2: 1 });
+    g.appendChild(criar('stop', { offset: '0%', 'stop-color': '#38bdf8', 'stop-opacity': .5 }));
+    g.appendChild(criar('stop', { offset: '100%', 'stop-color': '#38bdf8', 'stop-opacity': 0 }));
+    grad.appendChild(g); svg.appendChild(grad);
+    svg.appendChild(criar('path', { d: d + ` L ${px(pts.length - 1)} ${H - padB} L ${px(0)} ${H - padB} Z`, fill: 'url(#gradLinha)', opacity: .4 }));
+    svg.appendChild(criar('path', { d, fill: 'none', stroke: '#38bdf8', 'stroke-width': 2.5, 'stroke-linecap': 'round' }));
+    pts.forEach((p, i) => {
+      svg.appendChild(criar('circle', { cx: px(i), cy: py(p.min), r: 3.5, fill: '#0a0e17', stroke: '#38bdf8', 'stroke-width': 2 }));
+      const lbl = criar('text', { x: px(i), y: H - 14, 'text-anchor': 'middle', 'font-size': 9, fill: '#8b9bb8' });
+      lbl.textContent = p.hora; svg.appendChild(lbl);
+      if (i % 2 === 0) {
+        const val = criar('text', { x: px(i), y: py(p.min) - 7, 'text-anchor': 'middle', 'font-size': 9, fill: '#e5eefc' });
+        val.textContent = p.min + 'min'; svg.appendChild(val);
+      }
+    });
+  } else {
+    const total = dadosDashboard.dist.reduce((a, b) => a + b.valor, 0);
+    const cx = W / 2 - 60, cy = H / 2 + 4, r = 78;
+    let ang = -Math.PI / 2;
+    dadosDashboard.dist.forEach((d) => {
+      const frac = d.valor / total;
+      const a2 = ang + frac * Math.PI * 2;
+      const grande = frac > .5 ? 1 : 0;
+      const x1 = cx + r * Math.cos(ang), y1 = cy + r * Math.sin(ang);
+      const x2 = cx + r * Math.cos(a2), y2 = cy + r * Math.sin(a2);
+      svg.appendChild(criar('path', { d: `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${grande} 1 ${x2} ${y2} Z`, fill: CORES[d.nome], opacity: .92 }));
+      ang = a2;
+    });
+    svg.appendChild(criar('circle', { cx, cy, r: r * .45, fill: '#0f1522' }));
+    const pct = criar('text', { x: cx, y: cy - 2, 'text-anchor': 'middle', 'font-size': 16, 'font-weight': 800, fill: '#e5eefc' });
+    pct.textContent = total + ' total'; svg.appendChild(pct);
+    const sub = criar('text', { x: cx, y: cy + 14, 'text-anchor': 'middle', 'font-size': 9, fill: '#8b9bb8' });
+    sub.textContent = 'chamadas hoje'; svg.appendChild(sub);
+  }
+
+  $('grafico-legenda').innerHTML = dadosDashboard.dist.map(d => `<i style="background:${CORES[d.nome]}"></i>${d.nome}: ${d.valor}`).join('');
+}
+
+let tipoGrafico = 'barra';
+function initDashboard() {
+  gerarDadosDashboard();
+  renderKpis();
+  desenharGrafico(tipoGrafico);
+  document.querySelectorAll('[data-tipo]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('[data-tipo]').forEach(x => x.classList.remove('ativo'));
+      b.classList.add('ativo');
+      tipoGrafico = b.dataset.tipo;
+      desenharGrafico(tipoGrafico);
+    });
+  });
+  $('btn-gerar').addEventListener('click', () => {
+    gerarDadosDashboard();
+    renderKpis();
+    desenharGrafico(tipoGrafico);
+    logTerminal(`[dashboard] novos dados fictícios gerados (render: ${tipoGrafico})`, 'l-info');
+  });
+}
+
+/* ============================================================
+   4) TERMINAL — log simulado com efeito de digitação
+   ============================================================ */
+const MAX_LINHAS = 40;
+const filaTerminal = [];
+let digitando = false;
+
+function logTerminal(texto, classe = 'l-info') {
+  filaTerminal.push({ texto, classe });
+  if (filaTerminal.length > MAX_LINHAS) filaTerminal.shift();
+  if (!digitando) processarFilaTerminal();
+}
+
+async function processarFilaTerminal() {
+  digitando = true;
+  while (filaTerminal.length) {
+    const { texto, classe } = filaTerminal.shift();
+    const term = $('terminal');
+    const linha = document.createElement('div');
+    linha.className = `linha ${classe}`;
+    term.appendChild(linha);
+    for (let i = 0; i < texto.length; i++) {
+      linha.textContent += texto[i];
+      term.scrollTop = term.scrollHeight;
+      await aguardar(3);
+    }
+    while (term.children.length > MAX_LINHAS) term.removeChild(term.firstChild);
+  }
+  digitando = false;
+}
+
+/* ============================================================
+   5) TIMELINE — marcos clicáveis do projeto
+   ============================================================ */
+const MARCOS = [
+  { fase: 'Fase 01 · Concepção', titulo: 'Levantamento de requisitos',
+    detalhe: 'Parceria com o FabLab CamTuc. Entrevistas com servidores do Fórum para mapear os fluxos de Audiência, Consulta de Processo e Serviço Social e identificar o problema das filas sem triagem.',
+    tags: ['Entrevistas', 'Fluxos do Fórum', 'Spec'] },
+  { fase: 'Fase 02 · Arquitetura', titulo: 'Arquitetura do sistema',
+    detalhe: 'Backend Node.js + Express (API REST na porta 3001), WebSocket nativo (ws, porta 8080) para mensageria instantânea e SQLite para persistência. Frontend estático servido pelo próprio Express, com ES Modules e localStorage.',
+    tags: ['Node.js', 'Express', 'SQLite', 'ws'] },
+  { fase: 'Fase 03 · Totem', titulo: 'Totem de autoatendimento',
+    detalhe: 'Triagem guiada por CPF com validação (config/services/cpfVerify.js), seleção de serviço e sessão por horário, geração inteligente de senhas alfanuméricas sequenciais (ex.: AUD10, CON001, SS14) e comprovante otimizado para impressão térmica.',
+    tags: ['CPF', 'Senhas', 'Impressão térmica'] },
+  { fase: 'Fase 04 · Painel', titulo: 'Painel de chamadas em tempo real',
+    detalhe: 'O operador registra a chamada via POST /api/chamada; o servidor faz broadcast WebSocket para as TVs (/painel-de-chamada), que exibem a senha, o guichê e reproduzem alerta sonoro sintetizado via Web Speech API.',
+    tags: ['WebSocket', 'Broadcast', 'Voz sintetizada'] },
+  { fase: 'Fase 05 · Administração', titulo: 'Módulo admin com RBAC',
+    detalhe: 'Login setorial com múltiplas permissões, alertas antifurto de jurisdição (isolamento de cache, bloqueio em tela e Web Notifications) e reset global sudo que aciona deleções em massa seguras no SQLite.',
+    tags: ['RBAC', 'Segurança', 'Sudo reset'] },
+  { fase: 'Fase 06 · Validação', titulo: 'Piloto e testes de pico',
+    detalhe: 'Simulação de pico de público no FabLab CamTuc, validando o fluxo ponta a ponta: totem → emissão de senha → fila → chamada → painel da TV, com monitoramento de tempos de espera.',
+    tags: ['Piloto', 'Testes', 'Métricas'] }
+];
+
+function initTimeline() {
+  $('timeline').innerHTML = MARCOS.map((m, i) => `
+    <div class="marco" data-i="${i}">
+      <div class="ponto" title="Clique para abrir">${i + 1}</div>
+      <div class="corpo">
+        <div class="fase">${m.fase}</div>
+        <h3 data-toggle="${i}">${m.titulo}</h3>
+        <div class="detalhe">${m.detalhe}</div>
+        <div class="tags">${m.tags.map(t => `<span>${t}</span>`).join('')}</div>
+      </div>
+    </div>`).join('');
+  $('timeline').querySelectorAll('.marco').forEach(el => {
+    const toggle = () => el.classList.toggle('aberto');
+    el.querySelector('.ponto').addEventListener('click', toggle);
+    el.querySelector('h3').addEventListener('click', toggle);
+  });
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelector('.monitor-totem').classList.add('auto');
+  initControles();
+  initTotemInterativo();
+  initPainelOperacional();
+  initDashboard();
+  initTimeline();
+  $('tv-hora').textContent = horaAtual();
+  $('tv-data').textContent = dataAtual();
+  logTerminal('TriaJus v1.0.0 — simulação carregada (dados fictícios de exemplo).', 'l-info');
+  logTerminal('Inicie o fluxo para ver os monitores em ação, ou ative o modo interativo e dirija o totem você mesmo.', 'l-info');
+});
+</script>
+</body>
+</html>

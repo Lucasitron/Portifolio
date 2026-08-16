@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bengala Inteligente Assistiva — dispositivo IoT para deficientes visuais com ESP32, sensores e integração em nuvem.">
+    <title>Bengala Inteligente Assistiva | lucasitron</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/projeto.css">
+    <script src="../../js/projeto.js" defer></script>
+</head>
+<body>
+    <nav class="topbar" aria-label="Navegação principal">
+        <a class="logo" href="../../../index.html">&lt;lucasitron /&gt;</a>
+        <ul>
+            <li><a href="../../../index.html#home">Início</a></li>
+            <li><a href="../../../index.html#habilidades">Habilidades</a></li>
+            <li><a class="active" href="../../../index.html#projetos">Projetos</a></li>
+            <li><a href="../../../index.html#contato">Contato</a></li>
+        </ul>
+    </nav>
+
+    <a class="proj-back" href="../../../index.html#projetos">← Voltar aos projetos</a>
+
+    <section class="proj-hero">
+        <div class="proj-cover-wrap">
+            <img class="proj-cover" src="../../IMG/bengala/cover.webp"
+                 alt="Bengala Inteligente Assistiva" loading="eager">
+            <div class="proj-cover-overlay"></div>
+        </div>
+        <div class="proj-hero-copy">
+            <div class="proj-hero-meta">
+                <span class="card-kicker">📡 IoT</span>
+                <span class="project-status project-status--done">
+                    <span class="status-dot"></span> Concluído
+                </span>
+            </div>
+            <h1 class="proj-title">Bengala Inteligente<br>Assistiva</h1>
+            <p class="proj-subtitle">Dispositivo de acessibilidade para deficientes visuais com ESP32, sensores ultrassônicos e integração em nuvem.</p>
+            <div class="proj-tags">
+                <span class="tag" data-tech="iot">IoT</span>
+                <span class="tag" data-tech="esp32">ESP32</span>
+                <span class="tag" data-tech="python">C++ / Python</span>
+                <span class="tag">Acessibilidade</span>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <div class="proj-gallery">
+            <h2 class="reveal">Galeria</h2>
+            <div class="gallery-grid cols-2 reveal">
+                <div class="proj-img" data-caption="Protótipo físico da bengala">
+                    <img src="../../IMG/bengala/img1.webp" alt="Protótipo físico" loading="lazy">
+                    <span class="proj-img-caption">Protótipo físico</span>
+                </div>
+                <div class="proj-img" data-caption="Diagrama de conexões e sensores">
+                    <img src="../../IMG/bengala/img2.webp" alt="Diagrama elétrico" loading="lazy">
+                    <span class="proj-img-caption">Diagrama elétrico</span>
+                </div>
+                <div class="proj-img" data-caption="Módulo ESP32 com sensores montados">
+                    <img src="../../IMG/bengala/img3.webp" alt="Módulo ESP32" loading="lazy">
+                    <span class="proj-img-caption">Módulo ESP32</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="proj-details">
+            <div class="proj-details-grid">
+                <div class="proj-text reveal">
+                    <h2>Sobre o projeto</h2>
+                    <p>A Bengala Inteligente é um projeto de acessibilidade tecnológica para pessoas com deficiência visual. O dispositivo utiliza sensores ultrassônicos acoplados a um ESP32 para detectar obstáculos e comunicar ao usuário via vibração e feedback sonoro, com alcance configurável de até 2 metros.</p>
+
+                    <h2>Desafios e soluções</h2>
+                    <p>O maior desafio foi minimizar o consumo de energia para garantir autonomia adequada. A solução incluiu deep-sleep entre leituras e gerenciamento de PWM para os atuadores de vibração. A integração com nuvem foi implementada com MQTT para telemetria remota e atualização de firmware OTA.</p>
+
+                    <h2>Resultados</h2>
+                    <p>Protótipo funcional entregue com autonomia de bateria de 8+ horas em uso contínuo. O projeto foi expandido com módulo de geolocalização GPS para rastreamento de emergência por cuidadores.</p>
+                </div>
+
+                <aside class="reveal">
+                    <div class="proj-meta-card">
+                        <h3>📋 Detalhes</h3>
+                        <dl>
+                            <dt>Ano</dt>      <dd>2024</dd>
+                            <dt>Função</dt>   <dd>Desenvolvedor IoT</dd>
+                            <dt>Duração</dt>  <dd>4 meses</dd>
+                            <dt>Stack</dt>    <dd>C++, ESP32, MQTT, Python</dd>
+                            <dt>Hardware</dt> <dd>ESP32, HC-SR04, GPS NEO-6M</dd>
+                            <dt>Status</dt>   <dd>Concluído</dd>
+                        </dl>
+                    </div>
+                    <div class="proj-links">
+                        <a href="https://github.com/lucasitron" class="btn btn-secondary"
+                           target="_blank" rel="noopener">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                            Ver no GitHub
+                        </a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">&lt;lucasitron /&gt;</div>
+            <p class="footer-tagline">Engenharia da Computação · UFPA - CAMTUC</p>
+            <div class="footer-divider"></div>
+            <p class="footer-copy">Lucas Gonçalves Soares Sousa &mdash; 2025</p>
+        </div>
+    </footer>
+</body>
+</html>

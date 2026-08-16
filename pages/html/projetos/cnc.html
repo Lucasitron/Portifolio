@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Projetos de Fresadoras CNC — especificação, projeto mecânico e eletrônica para CNCs de fresagem.">
+    <title>Fresadoras CNC | lucasitron</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/projeto.css">
+    <script src="../../js/projeto.js" defer></script>
+</head>
+<body>
+    <nav class="topbar" aria-label="Navegação principal">
+        <a class="logo" href="../../../index.html">&lt;lucasitron /&gt;</a>
+        <ul>
+            <li><a href="../../../index.html#home">Início</a></li>
+            <li><a href="../../../index.html#habilidades">Habilidades</a></li>
+            <li><a class="active" href="../../../index.html#projetos">Projetos</a></li>
+            <li><a href="../../../index.html#contato">Contato</a></li>
+        </ul>
+    </nav>
+
+    <a class="proj-back" href="../../../index.html#projetos">← Voltar aos projetos</a>
+
+    <section class="proj-hero">
+        <div class="proj-cover-wrap">
+            <img class="proj-cover" src="../../IMG/cnc/cover.webp"
+                 alt="Fresadora CNC montada" loading="eager">
+            <div class="proj-cover-overlay"></div>
+        </div>
+        <div class="proj-hero-copy">
+            <div class="proj-hero-meta">
+                <span class="card-kicker">🔧 Hardware</span>
+                <span class="project-status project-status--done">
+                    <span class="status-dot"></span> Concluído
+                </span>
+            </div>
+            <h1 class="proj-title">Projetos de<br>Fresadoras CNC</h1>
+            <p class="proj-subtitle">Especificação técnica, projeto mecânico e eletrônica para CNCs de fresagem com drivers de potência e PCBs customizadas.</p>
+            <div class="proj-tags">
+                <span class="tag" data-tech="hardware">Hardware</span>
+                <span class="tag" data-tech="pcb">PCBs</span>
+                <span class="tag" data-tech="hardware">Motores Nema</span>
+                <span class="tag">KiCad</span>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <div class="proj-gallery">
+            <h2 class="reveal">Galeria</h2>
+            <div class="gallery-grid cols-2 reveal">
+                <div class="proj-img" data-caption="Estrutura mecânica da fresadora montada">
+                    <img src="../../IMG/cnc/img1.webp" alt="Estrutura mecânica" loading="lazy">
+                    <span class="proj-img-caption">Estrutura mecânica</span>
+                </div>
+                <div class="proj-img" data-caption="PCB do driver de potência (KiCad)">
+                    <img src="../../IMG/cnc/img2.webp" alt="PCB driver de potência" loading="lazy">
+                    <span class="proj-img-caption">PCB do driver de potência</span>
+                </div>
+                <div class="proj-img" data-caption="Motores Nema 17 e 23 instalados">
+                    <img src="../../IMG/cnc/img3.webp" alt="Motores Nema instalados" loading="lazy">
+                    <span class="proj-img-caption">Motores Nema instalados</span>
+                </div>
+                <div class="proj-img" data-caption="Fresagem de PCB em FR4">
+                    <img src="../../IMG/cnc/img4.webp" alt="Fresagem de PCB" loading="lazy">
+                    <span class="proj-img-caption">Fresagem de PCB em FR4</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="proj-details">
+            <div class="proj-details-grid">
+                <div class="proj-text reveal">
+                    <h2>Sobre o projeto</h2>
+                    <p>Projeto completo de desenvolvimento de fresadoras CNC para uso em FabLab, cobrindo desde a especificação mecânica dos eixos X, Y e Z até o projeto de PCBs para os drivers de potência dos motores de passo. As máquinas são utilizadas para fresagem de PCBs, madeira e acrílico.</p>
+
+                    <h2>Desafios e soluções</h2>
+                    <p>O principal desafio foi projetar drivers de potência compactos com dissipação térmica adequada para os motores Nema 23. As PCBs foram projetadas no KiCad e fabricadas por fresagem na própria máquina (bootstrap), com trilhas de 0.4mm e planos de terra otimizados para EMI. O firmware utiliza GRBL com configurações customizadas de aceleração e limites.</p>
+
+                    <h2>Resultados</h2>
+                    <p>Duas fresadoras entregues e operacionais no laboratório. Resolução de 0.1mm em fresagem de cobre, com capacidade de produção de PCBs de dupla face. Documentação técnica completa incluindo esquemáticos, Gerbers e guia de calibração.</p>
+                </div>
+
+                <aside class="reveal">
+                    <div class="proj-meta-card">
+                        <h3>📋 Detalhes</h3>
+                        <dl>
+                            <dt>Ano</dt>      <dd>2023–2024</dd>
+                            <dt>Função</dt>   <dd>Engenheiro de Hardware</dd>
+                            <dt>Duração</dt>  <dd>8 meses</dd>
+                            <dt>Stack</dt>    <dd>KiCad, FlatCAM, GRBL, FreeCAD</dd>
+                            <dt>Hardware</dt> <dd>Nema 17/23, DRV8825, Arduino</dd>
+                            <dt>Status</dt>   <dd>Concluído</dd>
+                        </dl>
+                    </div>
+                    <div class="proj-links">
+                        <a href="https://github.com/lucasitron" class="btn btn-secondary"
+                           target="_blank" rel="noopener">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                            Ver no GitHub
+                        </a>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">&lt;lucasitron /&gt;</div>
+            <p class="footer-tagline">Engenharia da Computação · UFPA - CAMTUC</p>
+            <div class="footer-divider"></div>
+            <p class="footer-copy">Lucas Gonçalves Soares Sousa &mdash; 2025</p>
+        </div>
+    </footer>
+</body>
+</html>
