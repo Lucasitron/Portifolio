@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<!-- ============================================================
+  MOCKUP / SIMULADOR — SIGFAB
+  Sistema de Gestão para Laboratórios de Fabricação Digital
+
+  Arquivo autossuficiente (HTML + CSS + JS embutidos, sem build).
+  Pronto para ser embutido via <iframe> na página de apresentação
+  do portfólio. Nenhuma CDN externa é utilizada.
+
+  Estrutura:
+    • Cabeçalho interno expansível (clique para abrir a descrição)
+    • Barra de controles (iniciar/pausar, reset, som, modo)
+    • Bloco "monitores"  — réplicas das telas reais do SigFab:
+        – Dashboard Admin (tema claro shadcn/indigo)
+        – Kanban de Produção (tema claro)
+        – Painel TV / Painel Operacional (tema escuro azul)
+    • Bloco "dashboard"  — KPIs + gráfico SVG (pizza/barras/linha)
+    • Bloco "terminal"   — logs simulados da API com efeito de digitação
+    • Bloco "timeline"   — marcos das versões do projeto
+  ============================================================ -->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador — SigFab</title>
+<style>
+/* ============================================================
+   TEMA DA PÁGINA DO MOCKUP (dark do portfólio)
+   ============================================================ */
+:root{
+  --bg:#0b0f19;
+  --surface:rgba(15,23,42,.6);
+  --surface-2:rgba(30,41,59,.7);
+  --border:rgba(51,65,85,.5);
+  --border-glow:rgba(99,102,241,.45);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --primary:#6366f1;
+  --primary-soft:#818cf8;
+  --secondary:#38bdf8;
+  --tertiary:#34d399;
+  --amber:#fbbf24;
+  --red:#f87171;
+  --violet:#a78bfa;
+  --font:'Inter','Outfit',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono','Fira Code',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(99,102,241,.14), transparent 60%),
+    radial-gradient(ellipse 700px 400px at 90% 0%, rgba(56,189,248,.10), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font);
+  font-size:15px;
+  line-height:1.5;
+  min-height:100vh;
+}
+button{font-family:inherit;cursor:pointer}
+::selection{background:rgba(99,102,241,.4)}
+
+/* -------------------- painéis gerais -------------------- */
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 8px}
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  margin-top:16px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.02), 0 12px 40px -18px rgba(0,0,0,.8);
+  position:relative;
+}
+.panel h2{
+  font-size:16px;font-weight:700;letter-spacing:.2px;
+  display:flex;align-items:center;gap:9px;
+}
+.panel h2::before{
+  content:'';width:4px;height:18px;border-radius:2px;
+  background:linear-gradient(180deg,var(--primary),var(--secondary));
+  box-shadow:0 0 10px var(--border-glow);
+}
+.panel .hint{color:var(--muted);font-size:12.5px;margin-top:4px;margin-left:13px}
+
+/* -------------------- cabeçalho interno expansível -------------------- */
+.page-head{
+  background:linear-gradient(160deg, rgba(99,102,241,.12), rgba(15,23,42,.6) 45%, rgba(56,189,248,.06));
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 0 34px -12px rgba(99,102,241,.35);
+}
+.head-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;cursor:pointer;user-select:none;
+  flex-wrap:wrap;
+}
+.logo-mark{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,#6366f1,#4f46e5);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 18px -4px var(--border-glow);
+}
+.logo-mark svg{width:22px;height:22px}
+.head-titles{flex:1;min-width:200px}
+.head-titles h1{font-size:16.5px;font-weight:800;letter-spacing:.2px}
+.head-titles p{font-size:12px;color:var(--muted)}
+.selos{display:flex;gap:6px;flex-wrap:wrap}
+.selo{
+  font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  padding:3px 9px;border-radius:99px;border:1px solid var(--border);
+  color:var(--muted);background:rgba(15,23,42,.5);white-space:nowrap;
+}
+.selo.prim{color:#c7d2fe;border-color:rgba(99,102,241,.5);background:rgba(99,102,241,.12)}
+.selo.ok{color:#6ee7b7;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+.selo.demo{color:#fde68a;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.head-arrow{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);background:var(--surface-2);
+  color:var(--muted);transition:transform .35s ease,color .2s,box-shadow .2s;
+}
+.page-head.open .head-arrow{transform:rotate(180deg);color:var(--primary-soft);box-shadow:0 0 12px -2px var(--border-glow)}
+.head-desc{
+  max-height:0;overflow:hidden;transition:max-height .45s ease;
+  border-top:1px solid transparent;
+}
+.page-head.open .head-desc{max-height:520px;border-top-color:var(--border)}
+.desc-inner{padding:14px 16px 16px;display:grid;gap:10px;grid-template-columns:1fr}
+.desc-grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.desc-card{
+  border:1px solid var(--border);border-radius:12px;background:rgba(11,15,25,.5);
+  padding:10px 12px;
+}
+.desc-card b{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--primary-soft);margin-bottom:4px}
+.desc-card p{font-size:12.5px;color:var(--muted);line-height:1.55}
+.desc-card p span{color:var(--text)}
+.tech-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.tech-chip{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--border);color:var(--secondary);background:rgba(56,189,248,.06)}
+
+/* -------------------- barra de controles -------------------- */
+.controls{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;
+  padding:10px 12px;border:1px solid var(--border);border-radius:14px;
+  background:var(--surface);
+}
+.controls .grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.controls .sep{width:1px;height:26px;background:var(--border);margin:0 4px}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--text);
+  font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:10px;
+  transition:border-color .2s,box-shadow .2s,transform .1s,background .2s;
+}
+.btn:hover{border-color:var(--border-glow);box-shadow:0 0 14px -4px var(--border-glow);background:rgba(99,102,241,.12)}
+.btn:active{transform:translateY(1px)}
+.btn.prim{background:linear-gradient(135deg,#6366f1,#4f46e5);border-color:transparent}
+.btn.prim:hover{box-shadow:0 0 18px -4px var(--border-glow)}
+.btn.danger:hover{border-color:rgba(248,113,113,.5);box-shadow:0 0 14px -4px rgba(248,113,113,.4);background:rgba(248,113,113,.1)}
+.btn.active{background:rgba(99,102,241,.18);border-color:var(--border-glow);box-shadow:0 0 14px -4px var(--border-glow)}
+.btn.small{padding:5px 10px;font-size:11.5px}
+.controls .mode-hint{font-size:11px;color:var(--muted);margin-left:auto}
+
+/* -------------------- bloco monitores -------------------- */
+.monitors{display:grid;gap:16px;margin-top:16px}
+@media(min-width:900px){
+  .monitors{grid-template-columns:1fr 1fr}
+  .mon-tv{grid-column:1/-1}
+}
+.monitor{
+  background:#090d17;border:1px solid var(--border);border-radius:16px;
+  padding:10px;position:relative;
+  transition:box-shadow .35s ease,border-color .35s ease,transform .35s ease;
+}
+.monitor.active{
+  border-color:rgba(99,102,241,.7);
+  box-shadow:0 0 0 1px rgba(99,102,241,.4), 0 0 34px -6px rgba(99,102,241,.55);
+  transform:translateY(-1px);
+}
+.monitor.active.tv-mon{border-color:rgba(56,189,248,.7);box-shadow:0 0 0 1px rgba(56,189,248,.4),0 0 34px -6px rgba(56,189,248,.5)}
+.m-head{display:flex;align-items:center;gap:8px;padding:2px 4px 9px}
+.m-head .led{width:9px;height:9px;border-radius:50%;background:#334155;flex-shrink:0;transition:background .2s}
+.monitor.active .led{background:var(--tertiary);animation:ledblink 1s ease-in-out infinite}
+@keyframes ledblink{0%,100%{opacity:1;box-shadow:0 0 0 rgba(52,211,153,0)}50%{opacity:.55;box-shadow:0 0 9px 1px rgba(52,211,153,.7)}}
+.m-head .m-name{font-size:12.5px;font-weight:700;letter-spacing:.3px}
+.m-head .m-sub{font-size:10.5px;color:var(--muted);margin-left:auto}
+.m-head .m-status{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;font-weight:800;color:var(--muted)}
+.monitor.active .m-status{color:var(--tertiary)}
+.screen{position:relative;overflow:hidden;border-radius:11px;border:1px solid rgba(51,65,85,.55);height:300px}
+.mon-tv .screen{height:330px}
+@media(max-width:520px){.screen{height:270px}.mon-tv .screen{height:300px}}
+
+/* ============================================================
+   TELA 1 e 2 — SIGFAB (tema claro: shadcn/ui + Tailwind)
+   Estilo fiel ao aplicativo real (cards brancos, indigo).
+   ============================================================ */
+.app-light{
+  --a-bg:#f8fafc;--a-card:#ffffff;--a-border:#e2e8f0;--a-text:#0f172a;
+  --a-muted:#64748b;--a-mutedbg:#f1f5f9;--a-primary:#4f46e5;--a-primary-hover:#4338ca;
+  background:var(--a-bg);color:var(--a-text);
+  font-family:var(--font);font-size:11px;
+  display:flex;flex-direction:column;height:100%;
+}
+.app-light .topbar{
+  display:flex;align-items:center;gap:8px;padding:7px 12px;
+  background:#fff;border-bottom:1px solid var(--a-border);flex-shrink:0;
+}
+.app-light .topbar .tb-logo{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,#6366f1,#4338ca);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px}
+.app-light .topbar .tb-title{font-weight:700;font-size:11.5px}
+.app-light .topbar .tb-tag{font-size:9.5px;color:var(--a-muted);margin-left:2px}
+.app-light .topbar .tb-search{margin-left:auto;background:var(--a-mutedbg);border:1px solid var(--a-border);border-radius:7px;padding:3px 10px;color:var(--a-muted);font-size:10px;min-width:110px}
+.app-light .topbar .tb-avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#818cf8,#4f46e5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700}
+.a-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 12px 6px;flex-shrink:0}
+@media(max-width:640px){.a-kpis{grid-template-columns:repeat(2,1fr)}}
+.a-kpi{background:var(--a-card);border:1px solid var(--a-border);border-radius:11px;padding:8px 10px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.a-kpi .k-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--a-muted)}
+.a-kpi .k-value{font-size:16px;font-weight:800;margin-top:1px;font-variant-numeric:tabular-nums}
+.a-kpi .k-delta{font-size:8.5px;font-weight:700}
+.a-kpi .k-delta.up{color:#059669}.a-kpi .k-delta.down{color:#dc2626}
+.a-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:8px;padding:6px 12px 12px;min-height:0;flex:1}
+@media(max-width:640px){.a-grid{grid-template-columns:1fr;overflow-y:auto}}
+.a-card{background:var(--a-card);border:1px solid var(--a-border);border-radius:11px;padding:9px 11px;box-shadow:0 1px 2px rgba(15,23,42,.04);display:flex;flex-direction:column;overflow:hidden}
+.a-card .ac-title{font-size:10.5px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.a-card .ac-title .dot{width:7px;height:7px;border-radius:50%;background:#4f46e5}
+.a-legend{display:flex;flex-wrap:wrap;gap:3px 9px;font-size:8.5px;color:var(--a-muted);margin-top:5px}
+.a-legend i{width:7px;height:7px;border-radius:2px;display:inline-block;margin-right:3px;vertical-align:middle}
+.a-alert{display:flex;gap:7px;align-items:flex-start;padding:6px 8px;border:1px solid var(--a-border);border-radius:8px;margin-bottom:5px;background:var(--a-bg)}
+.a-alert .ic{font-size:11px;flex-shrink:0;line-height:1.3}
+.a-alert b{font-size:9.5px;display:block;line-height:1.35}
+.a-alert span{font-size:8.5px;color:var(--a-muted)}
+.a-alert.urgent{border-color:#fecaca;background:#fef2f2}
+
+/* --- Kanban de Produção --- */
+.kanban-screen{height:100%;display:flex;flex-direction:column;overflow:hidden}
+.kanban-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:10px 12px 6px;flex-shrink:0}
+.kanban-head h3{font-size:13px;font-weight:800}
+.kanban-head p{font-size:9.5px;color:var(--a-muted)}
+.kanban-new{background:var(--a-primary);color:#fff;border:none;border-radius:8px;font-size:10px;font-weight:600;padding:6px 11px;display:flex;align-items:center;gap:4px;transition:background .2s}
+.kanban-new:hover{background:var(--a-primary-hover)}
+.kanban-cols{display:flex;gap:8px;padding:8px 12px 12px;overflow-x:auto;flex:1;min-height:0}
+.k-col{flex:1;min-width:158px;max-width:190px;background:rgba(241,245,249,.75);border-radius:9px;padding:7px;display:flex;flex-direction:column;gap:6px}
+.k-col .kc-head{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:700;color:#334155;padding:0 2px}
+.k-col .kc-count{background:#e2e8f0;border-radius:99px;font-size:9px;padding:1px 7px;color:#475569}
+.k-col .kc-empty{font-size:9px;color:#94a3b8;text-align:center;padding:12px 0}
+.k-card{background:#fff;border:1px solid #e2e8f0;border-radius:9px;padding:7px;box-shadow:0 1px 2px rgba(15,23,42,.05);position:relative;transition:box-shadow .3s}
+.k-card.flash{animation:flashcard 1s ease 2}
+@keyframes flashcard{0%,100%{box-shadow:0 0 0 rgba(79,70,229,0)}50%{box-shadow:0 0 0 2px rgba(79,70,229,.6),0 0 16px -2px rgba(79,70,229,.4)}}
+.k-card .kc-title{font-size:10px;font-weight:700;line-height:1.3}
+.k-card .kc-num{position:absolute;top:7px;right:7px;font-size:7.5px;color:#64748b;border:1px solid #e2e8f0;border-radius:4px;padding:1px 4px}
+.k-badges{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;padding-right:38px}
+.k-badge{font-size:7.5px;font-weight:700;color:#fff;border-radius:4px;padding:1px 5px}
+.k-badge.sec{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.k-meta{font-size:8.5px;color:#64748b;margin-top:5px;display:flex;flex-direction:column;gap:2px}
+.k-meta b{color:#0f172a;font-size:9.5px}
+.k-mats{background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:5px 6px;margin-top:6px;font-size:8px;color:#475569}
+.k-mats b{font-size:8px;color:#334155;display:block;margin-bottom:2px}
+.k-check{display:flex;align-items:center;gap:4px;font-size:8px;color:#475569;margin-top:4px}
+.k-check input{width:9px;height:9px;accent-color:#4f46e5}
+.k-actions{display:flex;gap:4px;margin-top:7px;border-top:1px solid #f1f5f9;padding-top:6px}
+.k-act{flex:1;font-size:8px;font-weight:700;padding:4px 2px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;color:#475569;transition:all .2s;white-space:nowrap}
+.k-act:hover{border-color:#4f46e5;color:#4f46e5;box-shadow:0 0 8px -2px rgba(79,70,229,.35)}
+.k-act.ok{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.k-act.ok:hover{background:#4338ca}
+.k-act:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.k-foot{font-size:7.5px;color:#94a3b8;margin-top:6px}
+
+/* ============================================================
+   TELA 3 — PAINEL TV (estilo fiel: slate-950 + azul)
+   ============================================================ */
+.tv-screen{
+  --tv-bg:#020617;
+  background:
+    radial-gradient(ellipse at top, rgba(30,58,138,.35), transparent 55%),
+    #020617;
+  color:#fff;font-family:var(--font);font-size:11px;
+  display:flex;flex-direction:column;height:100%;overflow:hidden;
+}
+.tv-head{
+  display:flex;align-items:center;gap:10px;justify-content:space-between;
+  margin:9px 10px 0;border-radius:14px;border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.05);padding:8px 12px;backdrop-filter:blur(8px);flex-shrink:0;
+}
+.tv-logo{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 18px -4px rgba(59,130,246,.6)}
+.tv-logo svg{width:16px;height:16px}
+.tv-head .tv-id{display:flex;align-items:center;gap:9px}
+.tv-head h3{font-size:15px;font-weight:900;letter-spacing:.3px;
+  background:linear-gradient(90deg,#fff,rgba(255,255,255,.65));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tv-head .tv-sub{font-size:8.5px;color:#94a3b8;font-weight:600}
+.tv-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+#tv-clock{font-size:24px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.92)}
+#tv-date{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#94a3b8}
+.tv-call-btn{
+  border:1px solid rgba(59,130,246,.5);background:rgba(59,130,246,.15);color:#93c5fd;
+  font-size:9px;font-weight:700;border-radius:8px;padding:6px 10px;margin-left:8px;
+  transition:all .2s;white-space:nowrap;
+}
+.tv-call-btn:hover{background:rgba(59,130,246,.3);box-shadow:0 0 14px -4px rgba(59,130,246,.7)}
+.tv-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:8px 10px 0;flex-shrink:0}
+@media(max-width:640px){.tv-metrics{grid-template-columns:repeat(2,1fr)}}
+.tv-metric{border-radius:12px;border:1px solid;padding:6px 9px;background:linear-gradient(135deg,var(--mc1),var(--mc2))}
+.tv-metric .m-label{font-size:7.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#cbd5e1}
+.tv-metric .m-val{font-size:19px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums}
+.tv-body{display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:8px;margin:8px 10px 10px;flex:1;min-height:0}
+@media(max-width:760px){.tv-body{grid-template-columns:1fr 1fr;overflow-y:auto}.tv-rank{grid-column:1/-1}}
+.tv-col{border:1px solid;border-radius:14px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.tv-col .tc-head{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-bottom:1px solid;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.tv-col .tc-head .cnt{font-size:11px;font-weight:900;border-radius:6px;padding:1px 8px}
+.tv-col .tc-body{padding:7px;display:flex;flex-direction:column;gap:6px;overflow:hidden;flex:1}
+.tv-act{border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.05);border-radius:10px;padding:7px;animation:tvslide .5s ease}
+@keyframes tvslide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.tv-act .ta-badges{display:flex;gap:4px;margin-bottom:5px}
+.tv-badge{font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;border-radius:4px;padding:2px 6px;border:1px solid}
+.tv-act .ta-title{font-size:10px;font-weight:700;line-height:1.35;color:#f1f5f9}
+.tv-act .ta-foot{display:flex;align-items:center;justify-content:space-between;margin-top:7px;font-size:8.5px;font-weight:600;color:#94a3b8}
+.tv-act .ta-who{background:rgba(2,6,23,.6);border:1px solid rgba(59,130,246,.25);border-radius:6px;padding:2px 7px;font-size:8.5px;font-weight:700;color:#93c5fd}
+.tv-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;color:#64748b;font-size:10px;font-weight:600;padding:10px;text-align:center}
+.tv-rank{border:1px solid rgba(251,191,36,.3);border-radius:14px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.tv-rank .rk-head{background:linear-gradient(90deg,rgba(251,191,36,.18),rgba(249,115,22,.12));border-bottom:1px solid rgba(251,191,36,.3);padding:7px 10px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#fbbf24;display:flex;align-items:center;gap:6px}
+.tv-rank .rk-body{padding:7px;display:flex;flex-direction:column;gap:6px;overflow:hidden;flex:1}
+.rk-item{display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);border-radius:10px;padding:5px 8px}
+.rk-item.top{border-color:rgba(251,191,36,.5);background:rgba(251,191,36,.1);box-shadow:0 0 16px -6px rgba(251,191,36,.4)}
+.rk-item .pos{font-size:14px;font-weight:900;width:20px;text-align:center}
+.rk-item:nth-child(1) .pos{color:#fbbf24}.rk-item:nth-child(2) .pos{color:#cbd5e1}.rk-item:nth-child(3) .pos{color:#d97706}
+.rk-item .ava{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0}
+.rk-item .rk-name{font-size:9.5px;font-weight:700;color:#f1f5f9;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-item .rk-name small{display:block;font-size:7px;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:#fbbf24}
+.rk-item .rk-badges{background:rgba(2,6,23,.5);border:1px solid rgba(255,255,255,.06);border-radius:7px;padding:2px 7px;text-align:center}
+.rk-item .rk-badges b{font-size:11px;display:block;line-height:1.1}
+.rk-item .rk-badges span{font-size:6.5px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8}
+
+/* ============================================================
+   BLOCO DASHBOARD (KPIs + gráfico SVG)
+   ============================================================ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+@media(max-width:720px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi{
+  border:1px solid var(--border);border-radius:13px;padding:12px 14px;
+  background:linear-gradient(160deg,rgba(99,102,241,.09),rgba(15,23,42,.55) 60%);
+  transition:border-color .2s,box-shadow .2s;
+}
+.kpi:hover{border-color:var(--border-glow);box-shadow:0 0 18px -6px var(--border-glow)}
+.kpi .k-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.kpi .k-value{font-size:22px;font-weight:900;margin-top:3px;font-variant-numeric:tabular-nums}
+.kpi .k-sub{font-size:10.5px;color:var(--muted);margin-top:2px}
+.chart-tools{display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.chart-tools .ct-label{font-size:11px;color:var(--muted);font-weight:600;margin-right:2px}
+.chart-box{margin-top:10px;border:1px solid var(--border);border-radius:13px;background:rgba(11,15,25,.55);padding:10px;overflow-x:auto}
+.chart-box svg{display:block;width:100%;min-width:480px;height:auto}
+.legend-row{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--muted);margin-top:8px}
+.legend-row i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+.chart-seg{cursor:pointer;transition:opacity .15s;outline:none}
+.chart-seg:hover{opacity:.8}
+.chart-seg:focus{outline:2px solid rgba(99,102,241,.6)}
+
+/* -------------------- terminal -------------------- */
+.term{
+  background:#05080f;border:1px solid var(--border);border-radius:13px;
+  height:210px;overflow-y:auto;padding:12px 14px;margin-top:12px;
+  font-family:var(--mono);font-size:11.5px;line-height:1.6;
+}
+.term .tl{white-space:pre-wrap;word-break:break-word}
+.term .tl .prompt{color:#818cf8;font-weight:700}
+.term .tl.ok{color:#6ee7b7}
+.term .tl.warn{color:#fde68a}
+.term .tl.err{color:#fca5a5}
+.term .tl.dim{color:#475569}
+.term .tl.mut{color:#64748b}
+.term .tl:last-child::after{content:'▊';color:var(--primary);animation:caret 1s steps(1) infinite;margin-left:2px}
+@keyframes caret{50%{opacity:0}}
+.term::-webkit-scrollbar{width:7px}.term::-webkit-scrollbar-thumb{background:rgba(51,65,85,.7);border-radius:4px}
+
+/* -------------------- timeline -------------------- */
+.tline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+@media(max-width:860px){.tline{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.tline{grid-template-columns:1fr}}
+.tl-item{
+  border:1px solid var(--border);border-radius:12px;padding:11px 12px;cursor:pointer;
+  background:rgba(15,23,42,.45);transition:all .25s;position:relative;
+}
+.tl-item:hover{border-color:var(--border-glow);transform:translateY(-2px);box-shadow:0 8px 24px -12px rgba(99,102,241,.5)}
+.tl-item.sel{border-color:rgba(99,102,241,.7);box-shadow:0 0 20px -6px var(--border-glow);background:rgba(99,102,241,.1)}
+.tl-item .ver{font-size:16px;font-weight:900;color:var(--primary-soft)}
+.tl-item .when{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px}
+.tl-item .what{font-size:11.5px;font-weight:600;margin-top:6px;line-height:1.4}
+.tl-item.plan .ver{color:var(--secondary)}
+.tl-item.plan::after{content:'PLANEJADO';position:absolute;top:8px;right:10px;font-size:7.5px;font-weight:900;letter-spacing:1px;color:var(--secondary);border:1px solid rgba(56,189,248,.4);border-radius:4px;padding:1px 5px}
+#tl-detail{
+  margin-top:10px;border:1px dashed var(--border);border-radius:12px;
+  padding:12px 14px;font-size:12.5px;color:var(--muted);line-height:1.6;
+  background:rgba(11,15,25,.4);min-height:46px;
+}
+#tl-detail b{color:var(--text)}
+
+/* -------------------- modal de reset -------------------- */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(2,6,18,.72);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:50;padding:16px;
+}
+.modal-bg.show{display:flex}
+.modal{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  max-width:380px;width:100%;padding:20px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.03),0 24px 60px -20px rgba(0,0,0,.9);
+  animation:modalin .25s ease;
+}
+@keyframes modalin{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.modal h3{font-size:15px;font-weight:800}
+.modal p{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.55}
+.modal .m-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+
+/* -------------------- rodapé -------------------- */
+.foot{
+  margin-top:18px;padding:12px 0 6px;text-align:center;
+  font-size:10.5px;color:var(--muted);letter-spacing:.4px;
+}
+.foot b{color:#fde68a}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ==================== CABEÇALHO INTERNO EXPANSÍVEL ==================== -->
+  <header class="page-head" id="page-head" aria-expanded="false">
+    <div class="head-bar" id="head-bar" role="button" tabindex="0">
+      <div class="logo-mark" aria-hidden="true">
+        <!-- Marca sigFab (hexágono + circuito) -->
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 2l8 4.5v9L12 20l-8-4.5v-9L12 2z" stroke="#fff" stroke-width="1.6" fill="rgba(255,255,255,.08)"/>
+          <path d="M12 7.5l4.5 2.6v5.2L12 18l-4.5-2.6v-5.2L12 7.5z" fill="#c7d2fe"/>
+          <circle cx="12" cy="12" r="1.6" fill="#fff"/>
+        </svg>
+      </div>
+      <div class="head-titles">
+        <h1>SigFab — Sistema de Gestão para FabLabs</h1>
+        <p>Clique para ver o que é, como funciona e como usar o simulador</p>
+      </div>
+      <div class="selos">
+        <span class="selo prim">v3.2.0</span>
+        <span class="selo">React · TS · Vite</span>
+        <span class="selo ok">Desenvolvimento ativo</span>
+        <span class="selo demo">Demonstração</span>
+      </div>
+      <div class="head-arrow" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div class="head-desc">
+      <div class="desc-inner">
+        <div class="desc-grid">
+          <div class="desc-card">
+            <b>O que é</b>
+            <p>Plataforma web que centraliza a gestão operacional de um <span>FabLab / laboratório de fabricação digital</span>: máquinas, membros, projetos, estoque, finanças, produção de encomendas, documentação técnica e rotinas 5S.</p>
+          </div>
+          <div class="desc-card">
+            <b>Problema que resolve</b>
+            <p>Organizar a operação do laboratório em um único painel: <span>encomendas saem da calculadora para o kanban de produção</span>, o consumo de materiais baixa o estoque automaticamente, a receita entra no financeiro e o Painel TV exibe a operação em tempo real para todos.</p>
+          </div>
+          <div class="desc-card">
+            <b>Como funciona</b>
+            <p>Dashboard admin com KPIs e gráfico de despesas, kanban com 4 etapas (Planejamento → Execução → Aguardando Retirada → Entregue), manutenção com chamados por máquina, estoque com entradas/saídas e um Painel TV com atividades abertas e ranking de gamificação.</p>
+          </div>
+          <div class="desc-card">
+            <b>Stack</b>
+            <div class="tech-chips">
+              <span class="tech-chip">React</span><span class="tech-chip">TypeScript</span>
+              <span class="tech-chip">Vite</span><span class="tech-chip">Tailwind v4</span>
+              <span class="tech-chip">shadcn/ui</span><span class="tech-chip">Node.js</span>
+              <span class="tech-chip">Express</span><span class="tech-chip">PostgreSQL</span>
+            </div>
+            <p style="margin-top:7px">Backend planejado com API REST e snapshot inicial via <span>/api/snapshot</span>; dados de demonstração são fictícios.</p>
+          </div>
+        </div>
+        <div class="desc-card" style="margin-top:0">
+          <b>Como usar o simulador</b>
+          <p>No <b>modo automático</b>, o ciclo real de operação roda sozinho (~1 s por etapa) — o monitor em operação ganha brilho e LED piscando, e cada evento aparece no terminal de logs. No <b>modo interativo</b>, assuma o papel do operador: crie encomendas, mova cartões no kanban, confirme consumos e chame a próxima atividade no Painel TV (ative o som para ouvir as chamadas). Use <b>Reset</b> para reiniciar o expediente com os dados iniciais.</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== CONTROLES ==================== -->
+  <section class="controls" aria-label="Controles do simulador">
+    <div class="grp">
+      <button class="btn prim" id="btn-start" title="Iniciar ou pausar o ciclo automático">
+        <span id="btn-start-ic">▶</span><span id="btn-start-tx">Iniciar</span>
+      </button>
+      <button class="btn danger" id="btn-reset" title="Zerar o estado e voltar aos dados iniciais">↺ Reset</button>
+      <button class="btn" id="btn-sound" title="Liga/desliga alertas sonoros">🔊 Som</button>
+    </div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="grp" role="group" aria-label="Modo de operação">
+      <button class="btn active" id="btn-mode-auto">Modo automático</button>
+      <button class="btn" id="btn-mode-int">Modo interativo</button>
+    </div>
+    <span class="mode-hint" id="mode-hint">O ciclo roda sozinho na sequência real de operação…</span>
+  </section>
+
+  <!-- ==================== BLOCO MONITORES ==================== -->
+  <section class="panel" id="bloco-monitores" aria-label="Simulador — telas do SigFab">
+    <h2>Simulador — SigFab</h2>
+    <p class="hint">Réplicas das telas reais. No modo automático o monitor em operação fica destacado com brilho; no modo interativo, clique nos botões das telas para atuar.</p>
+
+    <div class="monitors">
+      <!-- Monitor 1: Dashboard Admin (tema claro) -->
+      <div class="monitor" id="mon-admin">
+        <div class="m-head">
+          <span class="led" aria-hidden="true"></span>
+          <span class="m-name">Dashboard Admin</span>
+          <span class="m-sub">gestão do FabLab · tema claro</span>
+          <span class="m-status" id="st-admin">ocioso</span>
+        </div>
+        <div class="screen" id="scr-admin">
+          <div class="app-light">
+            <div class="topbar">
+              <span class="tb-logo">SF</span>
+              <span class="tb-title">SigFab</span>
+              <span class="tb-tag">· gestão do laboratório</span>
+              <span class="tb-search">Buscar módulos…</span>
+              <span class="tb-avatar">AS</span>
+            </div>
+            <div class="a-kpis">
+              <div class="a-kpi"><div class="k-label">Receita do mês</div><div class="k-value" id="ak-receita">R$ 4.280</div><div class="k-delta up">▲ 12,4%</div></div>
+              <div class="a-kpi"><div class="k-label">Encomendas ativas</div><div class="k-value" id="ak-encomendas">3</div><div class="k-delta up">▲ 1 hoje</div></div>
+              <div class="a-kpi"><div class="k-label">Máquinas</div><div class="k-value" id="ak-maquinas">8/9</div><div class="k-delta up">1 em manutenção</div></div>
+              <div class="a-kpi"><div class="k-label">Projetos ativos</div><div class="k-value">5</div><div class="k-delta up">▲ 2 entregas</div></div>
+            </div>
+            <div class="a-grid">
+              <div class="a-card">
+                <div class="ac-title"><span class="dot"></span>Despesas por categoria · junho</div>
+                <svg id="admin-pie" viewBox="0 0 220 130" style="min-height:120px"></svg>
+                <div class="a-legend" id="admin-legend"></div>
+              </div>
+              <div class="a-card">
+                <div class="ac-title"><span class="dot" style="background:#f59e0b"></span>Alertas e pendências</div>
+                <div style="overflow-y:auto;min-height:0;flex:1" id="admin-alerts"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monitor 2: Kanban de Produção (tema claro) -->
+      <div class="monitor" id="mon-kanban">
+        <div class="m-head">
+          <span class="led" aria-hidden="true"></span>
+          <span class="m-name">Kanban de Produção</span>
+          <span class="m-sub">encomendas · 4 etapas</span>
+          <span class="m-status" id="st-kanban">ocioso</span>
+        </div>
+        <div class="screen" id="scr-kanban">
+          <div class="app-light kanban-screen">
+            <div class="kanban-head">
+              <div>
+                <h3>Produção de Encomendas</h3>
+                <p>Ordens criadas pela calculadora, com baixa provisória e acompanhamento.</p>
+              </div>
+              <button class="kanban-new" id="kanban-new">＋ Nova Encomenda</button>
+            </div>
+            <div class="kanban-cols" id="kanban-cols"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monitor 3: Painel TV (tema escuro azul) -->
+      <div class="monitor mon-tv" id="mon-tv">
+        <div class="m-head">
+          <span class="led" aria-hidden="true"></span>
+          <span class="m-name">Painel Operacional — TV do FabLab</span>
+          <span class="m-sub">exibição pública · modo TV</span>
+          <span class="m-status" id="st-tv">ocioso</span>
+        </div>
+        <div class="screen" id="scr-tv">
+          <div class="tv-screen">
+            <div class="tv-head">
+              <div class="tv-id">
+                <div class="tv-logo">
+                  <svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="13" rx="2.5" stroke="#fff" stroke-width="1.7"/><path d="M8 21h8M12 17v4" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>
+                </div>
+                <div>
+                  <h3>Painel Operacional</h3>
+                  <p class="tv-sub">Atividades abertas, responsáveis e indicadores do FabLab</p>
+                </div>
+              </div>
+              <div class="tv-right">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div id="tv-clock">--:--</div>
+                  <button class="tv-call-btn" id="tv-call" title="Atribui a próxima atividade sem responsável">Chamar próxima ▶</button>
+                </div>
+                <div id="tv-date">—</div>
+              </div>
+            </div>
+            <div class="tv-metrics" id="tv-metrics"></div>
+            <div class="tv-body">
+              <div class="tv-col" style="border-color:rgba(248,113,113,.25)">
+                <div class="tc-head" style="background:rgba(248,113,113,.1);color:#f87171;border-bottom-color:rgba(248,113,113,.2)">
+                  <span>⚠ Sem responsável</span><span class="cnt" id="tv-cnt-un" style="background:rgba(248,113,113,.2);color:#f87171">0</span>
+                </div>
+                <div class="tc-body" id="tv-un"></div>
+              </div>
+              <div class="tv-col" style="border-color:rgba(59,130,246,.25)">
+                <div class="tc-head" style="background:rgba(59,130,246,.1);color:#60a5fa;border-bottom-color:rgba(59,130,246,.2)">
+                  <span>✓ Com responsável</span><span class="cnt" id="tv-cnt-as" style="background:rgba(59,130,246,.2);color:#60a5fa">0</span>
+                </div>
+                <div class="tc-body" id="tv-as"></div>
+              </div>
+              <div class="tv-rank">
+                <div class="rk-head">★ Ranking Global</div>
+                <div class="rk-body" id="tv-rank"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== BLOCO DASHBOARD (KPIs + gráficos) ==================== -->
+  <section class="panel" id="bloco-dashboard" aria-label="Painel de indicadores">
+    <h2>Painel de indicadores</h2>
+    <p class="hint">KPIs do laboratório e gráfico financeiro. Alterne o tipo de visualização ou gere novos dados.</p>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="k-label">Receita do mês</div><div class="k-value" id="kpi-receita">R$ 18.400</div><div class="k-sub">▲ 14% vs. mês anterior</div></div>
+      <div class="kpi"><div class="k-label">Encomendas em produção</div><div class="k-value" id="kpi-encomendas">7</div><div class="k-sub">4 em execução · 2 aguardando</div></div>
+      <div class="kpi"><div class="k-label">Máquinas operacionais</div><div class="k-value" id="kpi-maquinas">8/9</div><div class="k-sub">1 chamado de manutenção</div></div>
+      <div class="kpi"><div class="k-label">Itens em estoque crítico</div><div class="k-value" id="kpi-estoque">3</div><div class="k-sub">1 solicitação de compra aberta</div></div>
+    </div>
+
+    <div class="chart-tools">
+      <span class="ct-label">Visualização:</span>
+      <button class="btn small active" data-type="pizza" id="chart-pizza">Pizza</button>
+      <button class="btn small" data-type="barras" id="chart-barras">Barras</button>
+      <button class="btn small" data-type="linha" id="chart-linha">Linha</button>
+      <span style="flex:1"></span>
+      <button class="btn small" id="btn-regenerate">⟳ Gerar novos dados</button>
+    </div>
+    <div class="chart-box" id="chart-box"></div>
+    <div class="legend-row" id="chart-legend"></div>
+  </section>
+
+  <!-- ==================== BLOCO TERMINAL ==================== -->
+  <section class="panel" id="bloco-terminal" aria-label="Logs da API">
+    <h2>Terminal — logs da API</h2>
+    <p class="hint">Eventos simulados do backend (fonte de dados fictícia).</p>
+    <div class="term" id="term-box" aria-live="polite"></div>
+  </section>
+
+  <!-- ==================== BLOCO TIMELINE ==================== -->
+  <section class="panel" id="bloco-timeline" aria-label="Linha do tempo do projeto">
+    <h2>Linha do tempo do projeto</h2>
+    <p class="hint">Clique em um marco para ver os detalhes de cada fase.</p>
+    <div class="tline" id="tline">
+      <div class="tl-item" data-ver="3.0.0"><div class="ver">v3.0.0</div><div class="when">Mai / 2026</div><div class="what">Consolidação dos módulos operacionais</div></div>
+      <div class="tl-item" data-ver="3.1.0"><div class="ver">v3.1.0</div><div class="when">Mai / 2026</div><div class="what">Gráficos, edição de máquinas e docs editáveis</div></div>
+      <div class="tl-item" data-ver="3.2.0"><div class="ver">v3.2.0</div><div class="when">Jun / 2026</div><div class="what">Arquitetura feature-based</div></div>
+      <div class="tl-item plan" data-ver="4.0"><div class="ver">v4.0</div><div class="when">Planejado</div><div class="what">Integração com backend PostgreSQL</div></div>
+    </div>
+    <div id="tl-detail">Clique em um marco para expandir os detalhes da fase.</div>
+  </section>
+
+  <!-- ==================== RODAPÉ ==================== -->
+  <footer class="foot">
+    <b>Demonstração interativa — dados fictícios.</b> Simulador autossuficiente do projeto SigFab, pronto para ser embutido via iframe na página de apresentação do portfólio.
+  </footer>
+</div>
+
+<!-- Modal de confirmação do reset -->
+<div class="modal-bg" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <h3 id="modal-title">Reiniciar simulação?</h3>
+    <p>Todas as encomendas, atividades, indicadores e logs voltarão ao estado inicial do expediente. Essa ação não pode ser desfeita.</p>
+    <div class="m-actions">
+      <button class="btn" id="btn-cancel-reset">Cancelar</button>
+      <button class="btn prim" id="btn-confirm-reset">Resetar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DADOS FICTÍCIOS (exemplos)
+   ============================================================ */
+// Membros do FabLab (usados em atribuições e ranking)
+const MEMBERS = [
+  { id:'m1', name:'Admin Silva',  initials:'AS' },
+  { id:'m2', name:'João Operador', initials:'JO' },
+  { id:'m3', name:'Maria Técnica', initials:'MT' },
+  { id:'m4', name:'Pedro Santos', initials:'PS' },
+];
+
+// Ranking da gamificação (posição, nível, badges)
+const RANKING = [
+  { name:'Maria Técnica', level:'Mestre',   badges:12, initials:'MT' },
+  { name:'João Operador', level:'Especialista', badges:9, initials:'JO' },
+  { name:'Pedro Santos',  level:'Avançado',  badges:7, initials:'PS' },
+  { name:'Ana Recrutanda',level:'Intermediário', badges:5, initials:'AR' },
+  { name:'Admin Silva',   level:'Mestre',    badges:11, initials:'AS' },
+];
+
+// Ordens iniciais de produção (estado do expediente ao abrir)
+const initialOrders = [
+  { id:'o1', num:'ORD-001', title:'Chaveiros personalizados', client:'João Silva',   days:'Entrega: 14/08', value:320, priority:'Média',  techs:[{l:'Impressão 3D',c:'#2563eb'}], mats:[['Filamento PLA Branco','180 g']], status:'planejamento',       assigned:null,          consumption:false },
+  { id:'o2', num:'ORD-002', title:'Suporte de notebook 3D',   client:'Maria Santos', days:'Entrega: 16/08', value:145, priority:'Baixa',  techs:[{l:'Impressão 3D',c:'#2563eb'}], mats:[['Filamento PLA','300 g']],           status:'execucao',          assigned:'João Operador', consumption:false },
+  { id:'o3', num:'ORD-003', title:'Corte de acrílico — totem', client:'Pedro Costa',  days:'Entrega: 12/08', value:540, priority:'Média',  techs:[{l:'Laser',c:'#dc2626'}],        mats:[['Acrílico Cristal 2mm','2 un']],   status:'aguardando_retirada', assigned:'Maria Técnica', consumption:true  },
+  { id:'o4', num:'ORD-004', title:'Placa didática de PCB',    client:'Ana Lima',     days:'Entregue',       value:210, priority:'Baixa',  techs:[{l:'PCB',c:'#059669'}],         mats:[['Placa Fenolite Cobreada','6 un']], status:'entregue',          assigned:'Pedro Santos',  consumption:true  },
+];
+
+// Banco de novas encomendas para o ciclo automático / botão "Nova Encomenda"
+const ORDER_POOL = [
+  { title:'Chassi de drone — protótipo',        client:'Produção interna', value:1890, priority:'Alta',  techs:[{l:'Impressão 3D',c:'#2563eb'},{l:'CNC',c:'#7c3aed'}], mats:[['Filamento PLA','410 g'],['Chapa MDF 3mm','2 un']] },
+  { title:'Suporte para celular — lote 20 un',  client:'Cafeteria Aurora', value:760,  priority:'Média', techs:[{l:'Impressão 3D',c:'#2563eb'}],                          mats:[['Filamento PLA','1,2 kg']] },
+  { title:'Painel LED decorativo',              client:'Eventos Lumen',    value:980,  priority:'Média', techs:[{l:'Laser',c:'#dc2626'}],                                 mats:[['Acrílico Cristal 2mm','3 un']] },
+  { title:'Troféu maker — edição especial',     client:'Comp. Tech Jr',    value:1520, priority:'Alta',  techs:[{l:'Laser',c:'#dc2626'},{l:'CNC',c:'#7c3aed'}],          mats:[['Chapa MDF 3mm','4 un'],['Acrílico Cristal 2mm','2 un']] },
+  { title:'Shield didático Arduino',            client:'Curso Robótica',   value:310,  priority:'Baixa', techs:[{l:'PCB',c:'#059669'}],                                  mats:[['Placa Fenolite Cobreada','10 un']] },
+];
+
+// Banco de atividades do Painel TV (tipos: manutencao/5s/projeto/compras)
+const ACT_POOL = [
+  { type:'5s',         title:'Limpeza — Descarte de resíduos acumulados',         urgency:'Média',  age:'Hoje' },
+  { type:'manutencao', title:'Ender 3 não aquece o bico',                        urgency:'Alta',   age:'Hoje' },
+  { type:'projeto',    title:'Modelar chassi do drone em CAD',                   urgency:'Média',  age:'há 1 dia' },
+  { type:'compras',    title:'Reposição de PLA Branco — 5 kg',                   urgency:'Média',  age:'há 3 dias' },
+  { type:'5s',         title:'Organização — Reorganizar ferramentas de acabamento', urgency:'Baixa', age:'há 1 dia' },
+  { type:'projeto',    title:'Testar motores e controlador do drone',            urgency:'Média',  age:'Hoje' },
+  { type:'manutencao', title:'CNC Router com ruído anormal no eixo Y',           urgency:'Alta',   age:'há 2 dias' },
+  { type:'compras',    title:'Bicos de impressora 0.4mm — kit 10 un',            urgency:'Baixa',  age:'há 5 dias' },
+  { type:'5s',         title:'Padronização — Atualizar etiquetas de identificação', urgency:'Baixa', age:'há 4 dias' },
+];
+const ACT_TYPE = {
+  manutencao:{ label:'Manutenção', color:'border-orange-400', bg:'rgba(249,115,22,.18)', fg:'#fb923c' },
+  '5s':      { label:'5S',         color:'border-blue-400',   bg:'rgba(59,130,246,.16)', fg:'#60a5fa' },
+  projeto:   { label:'Projeto',    color:'border-green-400',  bg:'rgba(34,197,94,.16)',  fg:'#4ade80' },
+  compras:   { label:'Compras',    color:'border-purple-400', bg:'rgba(168,85,247,.16)', fg:'#c084fc' },
+};
+const URG_COLOR = { Alta:'#f87171', Média:'#fbbf24', Baixa:'#94a3b8' };
+const ASSIGNEES = ['Admin Silva','João Operador','Maria Técnica','Pedro Santos'];
+
+// Categorias financeiras (gráfico de despesas)
+const FIN_CATEGORIES = [
+  { label:'Encomendas',  color:'#14b8a6', value:38 },
+  { label:'Estoque',     color:'#6366f1', value:22 },
+  { label:'Manutenção',  color:'#f59e0b', value:15 },
+  { label:'Serviços',    color:'#38bdf8', value:14 },
+  { label:'Energia',     color:'#f87171', value:6  },
+  { label:'Outros',      color:'#94a3b8', value:5  },
+];
+
+// Estado vivo da simulação
+const state = {
+  mode:'auto',          // 'auto' | 'interativo'
+  running:false,
+  sound:true,
+  orders:[],            // ordens atuais (clonadas de initialOrders)
+  pendingActs:[],       // atividades sem responsável (Painel TV)
+  assignedActs:[],      // atividades com responsável (Painel TV)
+  actPool:[],           // fila de atividades ainda não exibidas
+  orderSeq:5,           // próximo número de ordem a criar (ORD-005…)
+  revenue:4280,         // receita do mês (Dashboard Admin)
+  stepIndex:0,
+  timer:null,
+  clockTimer:null,
+};
+
+/* ============================================================
+   UTILITÁRIOS
+   ============================================================ */
+const $ = (id) => document.getElementById(id);
+const fmtBRL = (v) => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+
+// Som: beep com WebAudio (sem CDN). Só funciona após interação do usuário.
+let audioCtx = null;
+function beep(freq=880, dur=0.12, type='square', vol=0.045){
+  if(!state.sound) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended') audioCtx.resume();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime+dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime+dur);
+  }catch(e){ /* sem áudio — não quebra a simulação */ }
+}
+const beepCall  = () => { beep(988,.16,'sine'); setTimeout(()=>beep(1319,.22,'sine'),140); }; // chamada da TV
+const beepMove  = () => beep(660,.09,'square');
+const beepDone  = () => { beep(523,.1); setTimeout(()=>beep(784,.14),90); };
+
+// Terminal com efeito de digitação
+function termLog(text, cls='ok'){
+  const box = $('term-box');
+  const line = document.createElement('div');
+  line.className = 'tl ' + cls;
+  box.appendChild(line);
+  box.scrollTop = box.scrollHeight;
+  let i = 0;
+  const iv = setInterval(()=>{
+    line.textContent += text[i] ?? '';
+    i++;
+    box.scrollTop = box.scrollHeight;
+    if(i >= text.length) clearInterval(iv);
+  }, 7);
+}
+
+/* ============================================================
+   GRÁFICOS SVG (sem dependências)
+   ============================================================ */
+// Pizza: retorna array de caminhos SVG a partir de segmentos
+function piePaths(segments, cx, cy, r){
+  const total = segments.reduce((s,seg)=>s+seg.value,0) || 1;
+  let angle = -Math.PI/2;
+  return segments.map(seg=>{
+    const frac = seg.value/total;
+    const a2 = angle + frac*2*Math.PI;
+    const x1 = cx + r*Math.cos(angle), y1 = cy + r*Math.sin(angle);
+    const x2 = cx + r*Math.cos(a2),   y2 = cy + r*Math.sin(a2);
+    const large = frac>0.5 ? 1 : 0;
+    const d = `M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large} 1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`;
+    angle = a2;
+    return d;
+  });
+}
+
+// Desenha a pizza do Dashboard Admin (monitor)
+function drawAdminPie(){
+  const svg = $('admin-pie');
+  const paths = piePaths(FIN_CATEGORIES, 60, 65, 50);
+  svg.innerHTML = paths.map((d,i)=>`<path class="chart-seg" d="${d}" fill="${FIN_CATEGORIES[i].color}" tabindex="0" data-i="${i}" aria-label="${FIN_CATEGORIES[i].label}"></path>`).join('');
+  $('admin-legend').innerHTML = FIN_CATEGORIES.map(c=>`<span><i style="background:${c.color}"></i>${c.label} ${c.value}%</span>`).join('');
+}
+
+// Desenha o gráfico do bloco Dashboard (pizza / barras / linha)
+function drawChart(type){
+  const box = $('chart-box');
+  const W = 520, H = 250;
+  const data = FIN_CATEGORIES;
+  const labels = ['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const lineData = [12.1, 13.8, 12.4, 15.2, 17.1, 18.4]; // receita em R$ mil
+
+  let svg = '';
+  if(type === 'pizza'){
+    const paths = piePaths(data, 150, 125, 92);
+    svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Despesas por categoria">
+      ${paths.map((d,i)=>`<path class="chart-seg" d="${d}" fill="${data[i].color}" tabindex="0" data-i="${i}"></path>`).join('')}
+    </svg>`;
+    $('chart-legend').innerHTML = data.map(c=>`<span><i style="background:${c.color}"></i>${c.label} — ${c.value}%</span>`).join('');
+  }
+  if(type === 'barras'){
+    const max = Math.max(...data.map(c=>c.value));
+    const bw = 52, gap = 30, x0 = 70, y0 = 205;
+    svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Despesas por categoria — barras">
+      ${[0,25,50,75,100].map(g=>`<line x1="${x0}" y1="${y0-g*1.7}" x2="${W-20}" y2="${y0-g*1.7}" stroke="rgba(148,163,184,.18)" stroke-width="1"/>
+        <text x="${x0-8}" y="${y0-g*1.7+4}" text-anchor="end" font-size="10" fill="#64748b">${g}%</text>`).join('')}
+      ${data.map((c,i)=>{
+        const h = c.value/max*160;
+        const x = x0 + 20 + i*(bw+gap);
+        return `<rect class="chart-seg" x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="6" fill="${c.color}" tabindex="0" data-i="${i}"></rect>
+          <text x="${x+bw/2}" y="${y0+16}" text-anchor="middle" font-size="10.5" fill="#94a3b8">${c.label.split(' ')[0]}</text>`;
+      }).join('')}
+    </svg>`;
+    $('chart-legend').innerHTML = data.map(c=>`<span><i style="background:${c.color}"></i>${c.label}</span>`).join('');
+  }
+  if(type === 'linha'){
+    const max = Math.max(...lineData), min = Math.min(...lineData);
+    const pts = lineData.map((v,i)=>{
+      const x = 70 + i*(W-110)/(lineData.length-1);
+      const y = 190 - (v-min)/(max-min)*140;
+      return [x,y];
+    });
+    const area = 'M'+pts.map(p=>`${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' L')+` L${pts[pts.length-1][0].toFixed(1)},205 L${pts[0][0].toFixed(1)},205 Z`;
+    svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Receita mensal — linha">
+      <path d="${area}" fill="rgba(99,102,241,.14)"></path>
+      <polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#818cf8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+      ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#a5b4fc" stroke="#0b0f19" stroke-width="1.5"></circle>
+        <text x="${p[0]}" y="${p[1]-11}" text-anchor="middle" font-size="10" fill="#94a3b8">R$ ${lineData[i].toFixed(1)}k</text>
+        <text x="${p[0]}" y="224" text-anchor="middle" font-size="10.5" fill="#94a3b8">${labels[i]}</text>`).join('')}
+      <text x="70" y="20" font-size="11" fill="#94a3b8">Receita mensal (R$ mil)</text>
+    </svg>`;
+    $('chart-legend').innerHTML = `<span><i style="background:#818cf8"></i>Receita mensal — demonstração</span>`;
+  }
+  box.innerHTML = svg;
+}
+let chartType = 'pizza';
+
+/* ============================================================
+   RENDER — KANBAN DE PRODUÇÃO
+   ============================================================ */
+const KANBAN_COLS = [
+  { id:'planejamento',        label:'Planejamento' },
+  { id:'execucao',            label:'Execução' },
+  { id:'aguardando_retirada', label:'Aguardando Retirada' },
+  { id:'entregue',            label:'Entregue' },
+];
+const KANBAN_NEXT = { planejamento:'execucao', execucao:'aguardando_retirada', aguardando_retirada:'entregue' };
+
+function renderKanban(flashId){
+  const wrap = $('kanban-cols');
+  wrap.innerHTML = KANBAN_COLS.map(col=>{
+    const cards = state.orders.filter(o=>o.status===col.id);
+    return `<div class="k-col">
+      <div class="kc-head"><span>${col.label}</span><span class="kc-count">${cards.length}</span></div>
+      ${cards.length ? cards.map(o=>kanbanCardHTML(o, flashId===o.id)).join('') : `<div class="kc-empty">Nenhuma ordem</div>`}
+    </div>`;
+  }).join('');
+}
+
+function kanbanCardHTML(o, flash){
+  const techs = o.techs.map(t=>`<span class="k-badge" style="background:${t.c}">${t.l}</span>`).join('');
+  const mats = o.mats.map(m=>`<div>• ${m[0]}: <b>${m[1]}</b></div>`).join('');
+  const assignee = o.assigned ? `<span style="color:#0f172a">👤 ${o.assigned.split(' ')[0]}</span>` : '<span style="color:#94a3b8">Sem operador</span>';
+  const next = KANBAN_NEXT[o.status];
+  return `<div class="k-card ${flash?'flash':''}" data-id="${o.id}">
+    <div class="kc-title">${o.title}</div><span class="kc-num">${o.num}</span>
+    <div class="k-badges"><span class="k-badge sec">${o.priority}</span>${techs}</div>
+    <div class="k-meta">
+      <span>👤 ${o.client}</span>
+      <span>📅 ${o.days}</span>
+      <b>${fmtBRL(o.value)}</b>
+    </div>
+    <div class="k-mats"><b>📦 Materiais</b>${mats}</div>
+    <div class="k-check"><input type="checkbox" ${o.consumption?'checked':''} disabled><label>Consumo confirmado</label></div>
+    <div class="k-actions">
+      <button class="k-act" data-act="assign" data-id="${o.id}" title="Atribuir operador">${assignee}</button>
+      ${o.status==='execucao' && !o.consumption ? `<button class="k-act ok" data-act="consume" data-id="${o.id}">✓ Consumir</button>` : ''}
+      ${next ? `<button class="k-act" data-act="move" data-id="${o.id}" title="Mover para ${next}">▶ Mover</button>` : '<span style="flex:1"></span>'}
+    </div>
+    <div class="k-foot">Lab R$ 0,00 · Subtotal ${fmtBRL(o.value)}</div>
+  </div>`;
+}
+
+/* ============================================================
+   RENDER — PAINEL TV
+   ============================================================ */
+const tvMetricTones = {
+  un:  ['rgba(248,113,113,.2)','rgba(153,27,27,.08)','rgba(248,113,113,.3)'],
+  as:  ['rgba(59,130,246,.2)','rgba(30,64,175,.08)','rgba(59,130,246,.3)'],
+  open:['rgba(251,191,36,.2)','rgba(180,83,9,.08)','rgba(251,191,36,.3)'],
+  mac: ['rgba(34,197,94,.2)','rgba(21,128,61,.08)','rgba(34,197,94,.3)'],
+  proj:['rgba(167,139,250,.2)','rgba(109,40,217,.08)','rgba(167,139,250,.3)'],
+};
+function renderTV(){
+  // métricas
+  const open = state.pendingActs.length + state.assignedActs.length;
+  const metrics = [
+    { k:'un',  l:'Sem responsável',      v:state.pendingActs.length, t:'red' },
+    { k:'as',  l:'Com responsável',      v:state.assignedActs.length, t:'blue' },
+    { k:'open',l:'Atividades abertas',   v:open, t:'amber' },
+    { k:'mac', l:'Máquinas operacionais',v:'8/9', t:'green' },
+    { k:'proj',l:'Projetos ativos',      v:'5',   t:'violet' },
+  ];
+  $('tv-metrics').innerHTML = metrics.map(m=>{
+    const t = tvMetricTones[m.k];
+    return `<div class="tv-metric" style="--mc1:${t[0]};--mc2:${t[1]};border-color:${t[2]}">
+      <div class="m-label">${m.l}</div><div class="m-val">${m.v}</div></div>`;
+  }).join('');
+  $('tv-cnt-un').textContent = state.pendingActs.length;
+  $('tv-cnt-as').textContent = state.assignedActs.length;
+
+  // coluna "sem responsável"
+  $('tv-un').innerHTML = state.pendingActs.length
+    ? state.pendingActs.map(a=>tvActHTML(a,false)).join('')
+    : `<div class="tv-empty">✓ Todas as atividades têm responsável</div>`;
+
+  // coluna "com responsável"
+  $('tv-as').innerHTML = state.assignedActs.length
+    ? state.assignedActs.map(a=>tvActHTML(a,true)).join('')
+    : `<div class="tv-empty">Nenhuma atividade em andamento</div>`;
+
+  // ranking
+  $('tv-rank').innerHTML = RANKING.map((r,i)=>`
+    <div class="rk-item ${i===0?'top':''}">
+      <span class="pos">${i+1}º</span>
+      <span class="ava">${r.initials}</span>
+      <span class="rk-name">${r.name}<small>${r.level}</small></span>
+      <span class="rk-badges"><b>${r.badges}</b><span>Badges</span></span>
+    </div>`).join('');
+}
+function tvActHTML(a, showWho){
+  const t = ACT_TYPE[a.type];
+  const u = URG_COLOR[a.urgency];
+  return `<div class="tv-act">
+    <div class="ta-badges">
+      <span class="tv-badge" style="background:${t.bg};color:${t.fg};border-color:${t.color}">${t.label}</span>
+      <span class="tv-badge" style="background:rgba(248,113,113,.15);color:#f87171;border-color:rgba(248,113,113,.3)">${a.urgency}</span>
+    </div>
+    <div class="ta-title">${a.title}</div>
+    <div class="ta-foot">
+      <span>🕐 ${a.age}</span>
+      ${showWho ? `<span class="ta-who">${a.assigned}</span>` : '<span style="color:#64748b">sem responsável</span>'}
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   RENDER — DASHBOARD ADMIN
+   ============================================================ */
+function renderAdmin(){
+  const active = state.orders.filter(o=>o.status!=='entregue').length;
+  $('ak-receita').textContent = fmtBRL(state.revenue);
+  $('ak-encomendas').textContent = active;
+  drawAdminPie();
+  // alertas (top 3 pendências + estoque crítico)
+  const alerts = [
+    { ic:'🛠️', t:'Laser K40 não corta completamente', s:'Chamado de manutenção · urgente', urgent:true },
+    { ic:'⚠️', t:'Reposição de PLA Branco — 5 kg',    s:'Estoque crítico · solicitação aberta', urgent:false },
+    { ic:'🧹', t:'Limpeza — Descarte de resíduos',    s:'Pendência 5S · sem responsável', urgent:false },
+  ];
+  $('admin-alerts').innerHTML = alerts.map(a=>`
+    <div class="a-alert ${a.urgent?'urgent':''}"><span class="ic">${a.ic}</span><div><b>${a.t}</b><span>${a.s}</span></div></div>`).join('');
+}
+
+/* ============================================================
+   LÓGICA DO FLUXO DE OPERAÇÃO
+   ============================================================ */
+function newOrderNumber(){ return 'ORD-' + String(state.orderSeq).padStart(3,'0'); }
+
+// Cria uma nova encomenda (banco de exemplos, em ciclo infinito)
+function createOrder(){
+  const pool = ORDER_POOL[state.orderSeq % ORDER_POOL.length];
+  const days = ['Entrega: 18/08','Entrega: 21/08','Entrega: 25/08','Entrega: 28/08','Entrega: 15/08'][state.orderSeq % 5];
+  const num = newOrderNumber();
+  const order = {
+    id:'o'+state.orderSeq, num, title:pool.title, client:pool.client,
+    days, value:pool.value, priority:pool.priority, techs:pool.techs, mats:pool.mats,
+    status:'planejamento', assigned:null, consumption:false,
+  };
+  state.orders.push(order);
+  state.orderSeq++;
+  // mantém o kanban enxuto: remove entregues antigas quando houver muitas
+  const delivered = state.orders.filter(o=>o.status==='entregue');
+  if(delivered.length > 4) state.orders.splice(state.orders.indexOf(delivered[0]),1);
+  return order;
+}
+
+function moveOrder(id, to){
+  const o = state.orders.find(x=>x.id===id);
+  if(!o || !KANBAN_NEXT[o.status]) return;
+  o.status = to;
+  if(to==='entregue'){ state.revenue += o.value; }
+  renderKanban(id);
+  renderAdmin();
+  beepMove();
+  termLog(`PATCH /api/orders/${o.id} → status "${KANBAN_COLS.find(c=>c.id===to).label}" (200)`, 'ok');
+  if(to==='entregue') termLog(`POST /api/financial/transactions → receita ${fmtBRL(o.value)} (201)`, 'ok');
+}
+
+function confirmConsumption(id){
+  const o = state.orders.find(x=>x.id===id);
+  if(!o || o.consumption) return;
+  o.consumption = true;
+  renderKanban(id);
+  beepDone();
+  const mat = o.mats[0];
+  termLog(`POST /api/orders/${o.id}/consumption → baixa de estoque: ${mat[0]} (-${mat[1]}) (200)`, 'ok');
+  termLog('WS broadcast → estoque atualizado nos painéis', 'dim');
+}
+
+// Atribui a próxima atividade sem responsável (chamada da TV)
+function tvCallNext(){
+  if(!state.pendingActs.length) { termLog('Nenhuma atividade sem responsável no momento.', 'warn'); return; }
+  const a = state.pendingActs.shift();
+  a.assigned = ASSIGNEES[Math.floor(Math.random()*ASSIGNEES.length)];
+  state.assignedActs.push(a);
+  renderTV();
+  beepCall();
+  termLog(`WS broadcast → ${a.assigned} chamado(a) para: ${a.title}`, 'ok');
+}
+
+// Garante que sempre haja atividades na fila (o ciclo não "morre")
+function ensureActivities(){
+  if(state.pendingActs.length + state.assignedActs.length >= 8) return;
+  while(state.pendingActs.length + state.assignedActs.length < 8 && state.actPool.length){
+    state.pendingActs.push({ ...state.actPool.shift(), assigned:null });
+  }
+  if(!state.actPool.length && state.pendingActs.length + state.assignedActs.length < 8){
+    // repõe o banco embaralhado para continuar o expediente
+    state.actPool = [...ACT_POOL].sort(()=>Math.random()-0.5);
+  }
+}
+
+/* ============================================================
+   CICLO AUTOMÁTICO (~1s por etapa)
+   ============================================================ */
+let activeMon = null;
+function setActive(mon){
+  if(activeMon === mon) return;
+  if(activeMon){ $(activeMon).classList.remove('active'); }
+  activeMon = mon;
+  const statusMap = { 'mon-admin':'em operação', 'mon-kanban':'em operação', 'mon-tv':'em operação' };
+  ['mon-admin','mon-kanban','mon-tv'].forEach(m=>{
+    const st = $({ 'mon-admin':'st-admin','mon-kanban':'st-kanban','mon-tv':'st-tv' }[m]);
+    if(m===mon){ $(m).classList.add('active'); st.textContent = statusMap[m]; st.style.color = m==='mon-tv' ? '#7dd3fc' : '#34d399'; }
+    else { st.textContent = 'aguardando'; st.style.color = ''; }
+  });
+}
+
+const AUTO_STEPS = [
+  { mon:'mon-admin', desc:'Dashboard Admin atualiza KPIs', run(){ renderAdmin(); termLog('GET /api/snapshot → sincronizando estados (200)', 'ok'); } },
+  { mon:'mon-admin', desc:'Gráfico de despesas atualizado', run(){ renderAdmin(); termLog('GET /api/dashboard/metrics → despesas por categoria (200)', 'mut'); } },
+  { mon:'mon-kanban', desc:'Nova encomenda criada', run(){ createOrder(); renderKanban(); termLog(`POST /api/orders → ${newOrderNumber()} criada no Planejamento (201)`, 'ok'); } },
+  { mon:'mon-kanban', desc:'Ordem move para Execução', run(){ const o = state.orders.filter(x=>x.status==='planejamento').pop(); if(o) moveOrder(o.id,'execucao'); } },
+  { mon:'mon-kanban', desc:'Consumo de materiais confirmado', run(){ const o = state.orders.filter(x=>x.status==='execucao' && !x.consumption).pop(); if(o) confirmConsumption(o.id); } },
+  { mon:'mon-tv', desc:'Nova atividade sem responsável', run(){ ensureActivities(); if(state.actPool.length){ const a={...state.actPool.shift(),assigned:null}; state.pendingActs.push(a); } renderTV(); beepMove(); termLog('WS broadcast → nova atividade aberta no Painel TV', 'dim'); } },
+  { mon:'mon-tv', desc:'Operador chamado pela TV', run(){ tvCallNext(); } },
+  { mon:'mon-kanban', desc:'Encomenda entregue', run(){ const o = state.orders.filter(x=>x.status==='aguardando_retirada').pop(); if(o) moveOrder(o.id,'entregue'); } },
+];
+
+function stepOnce(){
+  const s = AUTO_STEPS[state.stepIndex];
+  state.stepIndex = (state.stepIndex + 1) % AUTO_STEPS.length;
+  setActive(s.mon);
+  s.run();
+}
+
+function startLoop(){
+  if(state.timer) return;
+  state.running = true;
+  setActive('mon-admin');
+  $('btn-start-ic').textContent = '⏸';
+  $('btn-start-tx').textContent = 'Pausar';
+  $('mode-hint').textContent = state.mode==='auto'
+    ? 'Ciclo em andamento: encomenda → kanban → estoque → financeiro → Painel TV…'
+    : 'Modo interativo: assuma o operador nas telas abaixo.';
+  if(state.mode==='auto') state.timer = setInterval(stepOnce, 1100);
+}
+function pauseLoop(){
+  if(state.timer) clearInterval(state.timer);
+  state.timer = null;
+  state.running = false;
+  setActive(null);
+  $('btn-start-ic').textContent = '▶';
+  $('btn-start-tx').textContent = 'Iniciar';
+  $('mode-hint').textContent = state.mode==='auto'
+    ? 'Pausado. Clique em Iniciar para retomar o ciclo.'
+    : 'Pausado. Clique em Iniciar para acompanhar o relógio da TV.';
+}
+
+/* ============================================================
+   RESET (com confirmação)
+   ============================================================ */
+function resetAll(){
+  state.orders = initialOrders.map(o=>({...o, techs:o.techs.map(t=>({...t})), mats:o.mats.map(m=>[...m])}));
+  state.pendingActs = [
+    { ...ACT_POOL[0], assigned:null },
+    { ...ACT_POOL[3], assigned:null },
+  ];
+  state.assignedActs = [
+    { ...ACT_POOL[1], assigned:'João Operador' },
+    { ...ACT_POOL[2], assigned:'Maria Técnica' },
+  ];
+  state.actPool = [...ACT_POOL].slice(4).sort(()=>Math.random()-0.5);
+  state.orderSeq = 5;
+  state.revenue = 4280;
+  state.stepIndex = 0;
+  renderKanban();
+  renderTV();
+  renderAdmin();
+  drawChart(chartType);
+  $('term-box').innerHTML = '';
+  termLog('Expediente reiniciado com os dados iniciais.', 'warn');
+}
+
+/* ============================================================
+   RELÓGIO DO PAINEL TV (tempo real)
+   ============================================================ */
+function tickClock(){
+  const now = new Date();
+  $('tv-clock').textContent = now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  $('tv-date').textContent = now.toLocaleDateString('pt-BR',{day:'2-digit',month:'long'}).replace(/^0?/,'');
+}
+
+/* ============================================================
+   INTERAÇÕES
+   ============================================================ */
+// Cabeçalho expansível
+$('head-bar').addEventListener('click', ()=>{
+  const head = $('page-head');
+  head.classList.toggle('open');
+  head.setAttribute('aria-expanded', head.classList.contains('open'));
+});
+$('head-bar').addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('head-bar').click(); } });
+
+// Iniciar / Pausar
+$('btn-start').addEventListener('click', ()=>{
+  if(!state.timer) startLoop(); else pauseLoop();
+});
+
+// Som
+$('btn-sound').addEventListener('click', e=>{
+  state.sound = !state.sound;
+  $('btn-sound').textContent = state.sound ? '🔊 Som' : '🔇 Mudo';
+  beep(880,.08); // feedback (se acabou de desmutar)
+});
+
+// Modo automático / interativo
+function setMode(mode){
+  state.mode = mode;
+  $('btn-mode-auto').classList.toggle('active', mode==='auto');
+  $('btn-mode-int').classList.toggle('active', mode==='interativo');
+  if(mode==='interativo') pauseLoop();
+  else if(state.running) startLoop();
+  $('mode-hint').textContent = mode==='auto'
+    ? 'O ciclo roda sozinho na sequência real de operação…'
+    : 'Modo interativo: crie encomendas, mova cartões, confirme consumos e chame a próxima atividade na TV.';
+  termLog(mode==='auto' ? 'Modo automático ativado.' : 'Modo interativo ativado — você assume a operação.', 'warn');
+}
+$('btn-mode-auto').addEventListener('click', ()=>setMode('auto'));
+$('btn-mode-int').addEventListener('click', ()=>setMode('interativo'));
+
+// Reset (modal de confirmação)
+$('btn-reset').addEventListener('click', ()=>$('modal').classList.add('show'));
+$('btn-cancel-reset').addEventListener('click', ()=>$('modal').classList.remove('show'));
+$('btn-confirm-reset').addEventListener('click', ()=>{
+  $('modal').classList.remove('show');
+  pauseLoop();
+  resetAll();
+  termLog('Expediente zerado e restaurado para os dados iniciais.', 'warn');
+});
+$('modal').addEventListener('click', e=>{ if(e.target===$('modal')) $('modal').classList.remove('show'); });
+
+// Kanban — delegação de eventos (modo interativo)
+$('scr-kanban').addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  const act = btn.dataset.act;
+  if(act==='move'){ const o=state.orders.find(x=>x.id===id); if(o && KANBAN_NEXT[o.status]) moveOrder(id, KANBAN_NEXT[o.status]); }
+  if(act==='consume') confirmConsumption(id);
+  if(act==='assign'){
+    const o = state.orders.find(x=>x.id===id);
+    if(o){
+      const next = ASSIGNEES[(ASSIGNEES.indexOf(o.assigned)+1) % ASSIGNEES.length] || ASSIGNEES[0];
+      o.assigned = next;
+      renderKanban(id);
+      termLog(`PATCH /api/orders/${o.id} → operador: ${next} (200)`, 'dim');
+    }
+  }
+});
+// Nova encomenda manual (modo interativo)
+$('kanban-new').addEventListener('click', ()=>{
+  createOrder();
+  renderKanban();
+  beepMove();
+  termLog('Nova encomenda criada manualmente no Planejamento.', 'ok');
+});
+
+// Painel TV — chamar próxima atividade
+$('tv-call').addEventListener('click', tvCallNext);
+
+// Gráficos do bloco dashboard — tipo
+document.querySelectorAll('.chart-tools [data-type]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    chartType = btn.dataset.type;
+    document.querySelectorAll('.chart-tools [data-type]').forEach(b=>b.classList.toggle('active', b===btn));
+    drawChart(chartType);
+    termLog(`Visualização alterada para ${chartType}.`, 'dim');
+  });
+});
+// Gerar novos dados
+$('btn-regenerate').addEventListener('click', ()=>{
+  const mult = 0.7 + Math.random()*0.6;
+  const base = [38,22,15,14,6,5];
+  let sum = 0;
+  const vals = base.map(v=>Math.round(v*mult*100)/100);
+  sum = vals.reduce((a,b)=>a+b,0);
+  FIN_CATEGORIES.forEach((c,i)=>c.value = Math.round(vals[i]/sum*100));
+  drawChart(chartType);
+  renderAdmin();
+  termLog('Dados financeiros regenerados (fictícios).', 'mut');
+});
+
+// Timeline — marcos clicáveis
+const TL_INFO = {
+  '3.0.0': 'Consolidação dos módulos operacionais (Mai/2026): estoque, financeiro, manutenção, 5S e encomendas passaram a operar sobre uma única base de estado no frontend, com dados mockados e contratos tipados.',
+  '3.1.0': 'Gráficos e integrações (Mai/2026): gráfico de despesas em pizza no Dashboard Admin, edição completa de máquinas, documentação técnica editável e integração entre estoque e projetos no consumo de materiais.',
+  '3.2.0': 'Arquitetura feature-based (Jun/2026): reestruturação de src/ em features (admin, operator, globals, site), aliases @admin/@operator/@globals/@shared e componentes de UI compartilhados em src/shared/ui.',
+  '4.0': 'Backend real (planejado): API REST em Node.js/Express com PostgreSQL, snapshot inicial via GET /api/snapshot, autenticação e migração da fonte de dados mock para HTTP.'
+};
+document.querySelectorAll('.tl-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    document.querySelectorAll('.tl-item').forEach(i=>i.classList.remove('sel'));
+    item.classList.add('sel');
+    $('tl-detail').innerHTML = `<b>v${item.dataset.ver}</b> — ${TL_INFO[item.dataset.ver]}`;
+  });
+});
+
+// Cliques em segmentos de gráficos → logam a categoria
+['chart-box'].forEach(id=>{
+  $(id).addEventListener('click', e=>{
+    const seg = e.target.closest('.chart-seg');
+    if(!seg) return;
+    const i = +seg.dataset.i;
+    const c = FIN_CATEGORIES[i];
+    if(c) termLog(`Categoria "${c.label}" selecionada — ${c.value}% das despesas (fictício).`, 'mut');
+  });
+});
+$('admin-pie').addEventListener('click', e=>{
+  const seg = e.target.closest('.chart-seg');
+  if(!seg) return;
+  const c = FIN_CATEGORIES[+seg.dataset.i];
+  if(c) termLog(`Categoria "${c.label}" selecionada no Dashboard Admin — ${c.value}% (fictício).`, 'mut');
+});
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+resetAll();
+renderTV();
+drawChart('pizza');
+tickClock();
+state.clockTimer = setInterval(tickClock, 1000);
+termLog('SigFab v3.2.0 — ambiente de demonstração', 'mut');
+termLog('Fonte de dados: mock local (snapshot fictício)', 'dim');
+termLog('Pronto. Clique em Iniciar para rodar o ciclo de operação.', 'ok');
+</script>
+</body>
+</html>
